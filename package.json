@@ -1,0 +1,19 @@
+{
+  "name": "agile-ui",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.11.1",
+  "dependencies": {
+    "@agile-ui/components": "workspace:^",
+    "@agile-ui/constant": "workspace:^",
+    "@agile-ui/lint-config": "workspace:^",
+    "@agile-ui/share": "workspace:^",
+    "@agile-ui/ui": "workspace:^",
+    "eslint": "^9.33.0",
+    "typescript": "^5.9.2"
+  }
+}
