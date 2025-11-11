@@ -7,7 +7,7 @@ defineOptions({ name: "YDialog", inheritAttrs: false });
 const attrs = useAttrs();
 console.log(attrs);
 const data = reactive({
-  show: false,
+  show: true,
 });
 
 const template = {
@@ -24,7 +24,7 @@ const config = computed<ConfigList>(() => {
       uuid: "3",
       component: "YContainer",
       props: { vertical: true, justify: "center", position: "relative" },
-      show: "{{data.show}}",
+      show: "${data.show}",
       showType: "if",
       children: [
         {
@@ -58,5 +58,5 @@ const config = computed<ConfigList>(() => {
 </script>
 
 <template>
-  <Render :data="{ data }" :template="template" :config="config" :slots="$slots" />
+  <Render :data="data" :template="template" :config="config" :slots="$slots" />
 </template>

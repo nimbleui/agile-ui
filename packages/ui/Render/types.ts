@@ -45,6 +45,8 @@ export interface BaseRender {
   template?: Record<string, string>;
   /** 数据源 */
   data: Record<string, any>;
+  /** 行为配置 */
+  actions?: Record<string, EventConfig>;
 }
 
 export interface RenderProps extends BaseRender {
@@ -55,4 +57,53 @@ export interface RenderProps extends BaseRender {
 export interface RenderItemProps extends BaseRender {
   /** 配置参数 */
   item: ConfigTypes;
+}
+
+export interface EventConfig {
+  id: string;
+  type: string;
+  name: string;
+  /** 前置条件 */
+  conditions?: ConditionTypes[];
+  /** 执行的动作链 */
+  actions: ActionConfig[];
+  /** 条件不满足时执行的动作链 */
+  elseActions?: ActionConfig[];
+  /** 延迟执行(ms) */
+  delay?: number;
+}
+export interface ConditionTypes {
+  /** 唯一性标识 */
+  id: string;
+  /** 条件类型 */
+  type: "expression" | "function" | "api";
+  /** JS表达式 */
+  expression?: string;
+  /** 函数名 */
+  function?: string;
+  /** API地址 */
+  api?: string;
+  /** 参数 */
+  params?: Record<string, any>;
+  /** 逻辑连接符 */
+  logical?: "and" | "or";
+  /** 错误提示语 */
+  message?: string;
+}
+
+interface ActionConfig {
+  id: string;
+  type: string;
+  /** 目标组件/API/函数 */
+  target?: string;
+  /** 参数 */
+  params?: Record<string, any>;
+  /** 延迟执行 */
+  delay?: number;
+  /** 动作级别的条件 */
+  conditions?: ConditionTypes[];
+  /** 下一个动作 */
+  next?: ActionConfig | string;
+  /** 错误处理 */
+  errorHandler?: ActionConfig;
 }

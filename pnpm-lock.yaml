@@ -14,6 +14,9 @@ importers:
       '@agile-ui/constant':
         specifier: workspace:^
         version: link:packages/constant
+      '@agile-ui/hooks':
+        specifier: workspace:^
+        version: link:packages/hooks
       '@agile-ui/lint-config':
         specifier: workspace:^
         version: link:packages/lint-config
@@ -29,6 +32,28 @@ importers:
       typescript:
         specifier: ^5.9.2
         version: 5.9.3
+      vue:
+        specifier: ^3.5.22
+        version: 3.5.22(typescript@5.9.3)
+
+  docs:
+    dependencies:
+      vue:
+        specifier: ^3.5.22
+        version: 3.5.22(typescript@5.9.3)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.1
+        version: 6.0.1(vite@7.1.12)(vue@3.5.22(typescript@5.9.3))
+      '@vitejs/plugin-vue-jsx':
+        specifier: ^5.1.1
+        version: 5.1.1(vite@7.1.12)(vue@3.5.22(typescript@5.9.3))
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vite:
+        specifier: ^7.1.12
+        version: 7.1.12
 
   example:
     dependencies:
@@ -49,17 +74,9 @@ importers:
         specifier: ^7.1.12
         version: 7.1.12
 
-  packages/components:
-    dependencies:
-      vue:
-        specifier: ^3.5.22
-        version: 3.5.22(typescript@5.9.3)
+  packages/components: {}
 
-  packages/constant:
-    dependencies:
-      vue:
-        specifier: ^3.5.22
-        version: 3.5.22(typescript@5.9.3)
+  packages/constant: {}
 
   packages/hooks: {}
 
@@ -98,11 +115,7 @@ importers:
 
   packages/share: {}
 
-  packages/ui:
-    dependencies:
-      vue:
-        specifier: ^3.5.22
-        version: 3.5.22(typescript@5.9.3)
+  packages/ui: {}
 
 packages:
 

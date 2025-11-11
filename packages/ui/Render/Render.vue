@@ -7,5 +7,13 @@ defineProps<RenderProps>();
 </script>
 
 <template>
-  <RenderItem v-for="item in config" :key="item.uuid" :data="data" :item="item" :slots="slots" :template="template" />
+  <RenderItem
+    v-for="item in config"
+    :key="item.uuid"
+    :data="data"
+    :item="item"
+    :slots="slots"
+    :template="template"
+    :events="events"
+  />
 </template>

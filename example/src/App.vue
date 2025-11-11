@@ -16,5 +16,5 @@ const show = ref(false);
     <div>内容33333</div>
   </Dialog>
 
-  <InputField></InputField>
+  <InputField label="label text" placeholder="placeholder text" />
 </template>

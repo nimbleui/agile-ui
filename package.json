@@ -10,10 +10,12 @@
   "dependencies": {
     "@agile-ui/components": "workspace:^",
     "@agile-ui/constant": "workspace:^",
+    "@agile-ui/hooks": "workspace:^",
     "@agile-ui/lint-config": "workspace:^",
     "@agile-ui/share": "workspace:^",
     "@agile-ui/ui": "workspace:^",
     "eslint": "^9.33.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vue": "^3.5.22"
   }
 }
