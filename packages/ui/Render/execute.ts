@@ -16,3 +16,9 @@ export function execute(body: string | undefined, data: Record<string, any>) {
     console.log(error);
   }
 }
+
+export function executeCode(body: string | undefined, data: Record<string, any>) {
+  return body?.replace(/\$\{\s*([^}]+)\s*\}/g, (match: string, path: string) => {
+    return execute(path, data);
+  });
+}

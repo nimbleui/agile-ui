@@ -41,10 +41,18 @@ const children = computed(() => {
 const show = computed(() => {
   return execute(props.item.show, { data: props.data }) ?? true;
 });
+
+const onEvents = computed(() => {
+  const { item } = props;
+  if (!item.on) return;
+  return forEach(item.on, (eventName, key) => {
+    console.log(eventName, key);
+  });
+});
 </script>
 
 <template>
-  <component :is="item.component || item.slot" v-if="show" v-bind="item.props" :uuid="item.uuid">
+  <component :is="item.component || item.slot" v-if="show" v-bind="item.props" :uuid="item.uuid" v-on="onEvents">
     <template v-for="(el, key) in children" :key="key" #[key]>
       <Render :config="el" :slots="slots" :data="data" :template="template" />
     </template>

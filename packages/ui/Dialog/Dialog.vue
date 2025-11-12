@@ -24,7 +24,7 @@ const config = computed<ConfigList>(() => {
       uuid: "3",
       component: "YContainer",
       props: { vertical: true, justify: "center", position: "relative" },
-      show: "${data.show}",
+      show: "${data.show.aa}",
       showType: "if",
       children: [
         {

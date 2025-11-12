@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
-import { Render, type EventConfig, type ConfigList } from "../Render";
+import { Render, type ActionConfig, type ConfigList } from "../Render";
 import { InputFieldProps } from "./types";
 
 defineOptions({ name: "InputField" });
@@ -14,7 +14,7 @@ const config = computed<ConfigList>(() => {
       uuid: "1",
       component: "YField",
       props: { vertical: true, style: "box-shadow: 0 0 0 1px #dcdfe6 inset; border-radius: 4px;" },
-      on: { click: "click", change: "click" },
+      on: { click: "saveInfo", change: "saveInfo" },
       children: [
         {
           uuid: "1-1",
@@ -32,41 +32,36 @@ const config = computed<ConfigList>(() => {
   ];
 });
 
-const events: { [key: string]: EventConfig } = {
-  click: {
-    id: "1",
-    name: "提交",
-    type: "show_dialog",
-    actions: [
-      {
-        id: "1-1",
-        type: "api_call",
-        conditions: [
-          /** 校验必填项 */
-          {
-            id: "1-1-1",
-            type: "expression",
-            expression: "${data.name && data.email && data.phone}",
-            message: "请填写完整信息",
-          },
-        ],
-        params: {
-          url: "",
-          method: "GET",
-          data: "${forms.orderForm}",
+const events: { [key: string]: ActionConfig[] } = {
+  saveInfo: [
+    {
+      id: "1-1",
+      type: "api_call",
+      conditions: [
+        /** 校验必填项 */
+        {
+          id: "1-1-1",
+          type: "expression",
+          expression: "${data.name && data.email && data.phone}",
+          message: "请填写完整信息",
         },
-        next: "1-2",
+      ],
+      params: {
+        url: "",
+        method: "GET",
+        data: "${forms.orderForm}",
       },
-      {
-        id: "1-2",
-        type: "show_message",
-        params: {
-          message: "提交成功！",
-          duration: 2000,
-        },
+      next: "1-2",
+    },
+    {
+      id: "1-2",
+      type: "show_message",
+      params: {
+        message: "提交成功！",
+        duration: 2000,
       },
-    ],
-  },
+    },
+  ],
 };
 </script>
 

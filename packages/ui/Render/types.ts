@@ -21,6 +21,8 @@ export type ConfigItem<T extends Record<string, any> = any> = {
     children?: ConfigItem<T>[];
     /** 创建插槽，true为default插槽 */
     slots?: Record<string, string>;
+    /** 绑定的事件 */
+    on?: Record<string, string>;
   } & (
     | {
         /** 组件名 */
@@ -45,8 +47,8 @@ export interface BaseRender {
   template?: Record<string, string>;
   /** 数据源 */
   data: Record<string, any>;
-  /** 行为配置 */
-  actions?: Record<string, EventConfig>;
+  /** 事件配置 */
+  events?: Record<string, EventConfig>;
 }
 
 export interface RenderProps extends BaseRender {
@@ -59,19 +61,6 @@ export interface RenderItemProps extends BaseRender {
   item: ConfigTypes;
 }
 
-export interface EventConfig {
-  id: string;
-  type: string;
-  name: string;
-  /** 前置条件 */
-  conditions?: ConditionTypes[];
-  /** 执行的动作链 */
-  actions: ActionConfig[];
-  /** 条件不满足时执行的动作链 */
-  elseActions?: ActionConfig[];
-  /** 延迟执行(ms) */
-  delay?: number;
-}
 export interface ConditionTypes {
   /** 唯一性标识 */
   id: string;
@@ -91,9 +80,20 @@ export interface ConditionTypes {
   message?: string;
 }
 
-interface ActionConfig {
+export type ActionType = "show_modal" | "show_message" | "navigate" | "api_call" | "execute_code" | "update_data";
+
+export interface ActionConfig {
   id: string;
-  type: string;
+  /**
+   *  行为类型
+   * show_modal: 显示模态框
+   * show_message: 显示消息
+   * navigate: 页面跳转
+   * api_call: 调用API
+   * execute_code: 执行代码
+   * update_data: 更新数据源
+   * */
+  type: ActionType;
   /** 目标组件/API/函数 */
   target?: string;
   /** 参数 */
@@ -106,4 +106,14 @@ interface ActionConfig {
   next?: ActionConfig | string;
   /** 错误处理 */
   errorHandler?: ActionConfig;
+}
+
+export interface EventConfig {
+  id: string;
+  /** 事件类型 */
+  type: string;
+  /** 事件级别的条件 */
+  conditions?: ConditionTypes[];
+  /** 事件包含的动作列表 */
+  actions: ActionConfig[];
 }
