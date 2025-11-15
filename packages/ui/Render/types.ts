@@ -23,6 +23,8 @@ export type ConfigItem<T extends Record<string, any> = any> = {
     slots?: Record<string, string>;
     /** 绑定的事件 */
     on?: Record<string, string>;
+    /** 双向数据绑定 */
+    model?: Record<string, string>;
   } & (
     | {
         /** 组件名 */
@@ -69,7 +71,7 @@ export interface ConditionTypes {
   /** JS表达式 */
   expression?: string;
   /** 函数名 */
-  function?: string;
+  functionName?: string;
   /** API地址 */
   api?: string;
   /** 参数 */
@@ -106,6 +108,8 @@ export interface ActionConfig {
   next?: ActionConfig | string;
   /** 错误处理 */
   errorHandler?: ActionConfig;
+  /** 动作说明 */
+  desc: string;
 }
 
 export interface EventConfig {

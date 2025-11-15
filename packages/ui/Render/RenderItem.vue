@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { forEach } from "@agile-ui/share";
+import { forEach, isEvent } from "@agile-ui/share";
 import { components } from "@agile-ui/components";
 import type { ConfigTypes, RenderItemProps } from "./types";
 import Render from "./Render.vue";
-import { execute } from "./execute";
+import { executeCode } from "./execute";
+import { executeEventActive } from "./executeActive";
 
 defineOptions({ name: "RenderItem", components });
 const props = defineProps<RenderItemProps>();
@@ -39,22 +40,32 @@ const children = computed(() => {
 });
 
 const show = computed(() => {
-  return execute(props.item.show, { data: props.data }) ?? true;
+  return executeCode(props.item.show, props.data) ?? true;
 });
+
+const handleEvent = (value: string) => {
+  return (options: Record<string, any> = {}) => {
+    const { events } = props;
+    if (isEvent(options)) options = { event: options };
+    executeEventActive(events?.[value], { ...props.data, ...options });
+  };
+};
 
 const onEvents = computed(() => {
   const { item } = props;
-  if (!item.on) return;
-  return forEach(item.on, (eventName, key) => {
-    console.log(eventName, key);
+  const res: Record<string, (...args: any[]) => any> = {};
+  if (!item.on) return res;
+  forEach(item.on, (eventName, key) => {
+    res[key] = handleEvent(eventName);
   });
+  return res;
 });
 </script>
 
 <template>
   <component :is="item.component || item.slot" v-if="show" v-bind="item.props" :uuid="item.uuid" v-on="onEvents">
     <template v-for="(el, key) in children" :key="key" #[key]>
-      <Render :config="el" :slots="slots" :data="data" :template="template" />
+      <Render :config="el" :slots="slots" :data="data" :template="template" :events="events" />
     </template>
   </component>
 </template>

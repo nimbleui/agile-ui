@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
-import { Render, type ActionConfig, type ConfigList } from "../Render";
+import { Render, type EventConfig, type ConfigList } from "../Render";
 import { InputFieldProps } from "./types";
 
 defineOptions({ name: "InputField" });
 
 const props = defineProps<InputFieldProps>();
+const emits = defineEmits<{
+  (e: "update:modelValue", value: string): void;
+}>();
 
-const data = reactive({});
+const data = reactive({
+  value: "",
+});
 const config = computed<ConfigList>(() => {
   return [
     {
       uuid: "1",
       component: "YField",
       props: { vertical: true, style: "box-shadow: 0 0 0 1px #dcdfe6 inset; border-radius: 4px;" },
-      on: { click: "saveInfo", change: "saveInfo" },
+      // on: { click: "saveInfo" },
       children: [
         {
           uuid: "1-1",
@@ -26,45 +31,71 @@ const config = computed<ConfigList>(() => {
           uuid: "2",
           component: "YInput",
           props: { type: "text", placeholder: props.placeholder },
+          model: { modelValue: "data.value", a: "data.cc" },
+          // on: { change: "inputChange" },
         },
       ],
     },
   ];
 });
 
-const events: { [key: string]: ActionConfig[] } = {
-  saveInfo: [
-    {
-      id: "1-1",
-      type: "api_call",
-      conditions: [
-        /** 校验必填项 */
-        {
-          id: "1-1-1",
-          type: "expression",
-          expression: "${data.name && data.email && data.phone}",
-          message: "请填写完整信息",
+const events: { [key: string]: EventConfig } = {
+  saveInfo: {
+    id: "",
+    type: "",
+    actions: [
+      {
+        id: "1-1",
+        type: "api_call",
+        desc: "提交表单",
+        conditions: [
+          /** 校验必填项 */
+          {
+            id: "1-1-1",
+            type: "expression",
+            expression: "${data.name && data.email && data.phone}",
+            message: "请填写完整信息",
+          },
+        ],
+        params: {
+          url: "",
+          method: "GET",
+          data: "${forms.orderForm}",
         },
-      ],
-      params: {
-        url: "",
-        method: "GET",
-        data: "${forms.orderForm}",
+        next: "1-2",
       },
-      next: "1-2",
-    },
-    {
-      id: "1-2",
-      type: "show_message",
-      params: {
-        message: "提交成功！",
-        duration: 2000,
+      {
+        id: "1-2",
+        type: "show_message",
+        desc: "显示提交成功信息",
+        params: {
+          message: "提交成功！",
+          duration: 2000,
+        },
       },
-    },
-  ],
+    ],
+  },
+  inputChange: {
+    id: "",
+    type: "",
+    actions: [
+      {
+        id: "2-1",
+        type: "execute_code",
+        desc: "更新输入值到data",
+        params: {
+          code: "${data.value = event.target.value}",
+        },
+      },
+    ],
+  },
 };
+
+const options = computed(() => {
+  return { data, props, emits };
+});
 </script>
 
 <template>
-  <Render :data="data" :config="config" :slots="$slots" />
+  <Render :data="options" :config="config" :slots="$slots" :events="events" />
 </template>

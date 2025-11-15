@@ -7,10 +7,8 @@
 export function execute(body: string | undefined, data: Record<string, any>) {
   if (!body) return null;
 
-  const match = body.match(/\$\{\s*([^}]+)\s*\}/);
-  if (!match) return body;
   try {
-    const func = new Function(...Object.keys(data), `return ${match[1]};`);
+    const func = new Function(...Object.keys(data), `return ${body};`);
     return func(...Object.values(data));
   } catch (error) {
     console.log(error);
@@ -18,7 +16,17 @@ export function execute(body: string | undefined, data: Record<string, any>) {
 }
 
 export function executeCode(body: string | undefined, data: Record<string, any>) {
-  return body?.replace(/\$\{\s*([^}]+)\s*\}/g, (match: string, path: string) => {
+  const value = body?.replace(/\$\{\s*([^}]+)\s*\}/g, (match: string, path: string) => {
     return execute(path, data);
   });
+
+  if (value == null) return null;
+  if (value == "true") return true;
+  if (value == "false") return false;
+
+  if (!isNaN(Number(value)) && value.trim() !== "") {
+    return Number(value);
+  }
+
+  return value;
 }

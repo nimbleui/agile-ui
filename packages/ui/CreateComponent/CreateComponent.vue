@@ -1,14 +1,9 @@
 <script setup lang="ts">
-defineOptions({ name: 'CreateComponent' });
+defineOptions({ name: "CreateComponent" });
 </script>
 
 <template>
-  <div class="">
-
-  </div>
+  <div class=""></div>
 </template>
 
-<style  lang="scss" scoped>
-
- 
-</style>
+<style lang="scss" scoped></style>
