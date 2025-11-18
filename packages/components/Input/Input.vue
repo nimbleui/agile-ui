@@ -7,8 +7,8 @@ defineOptions({ name: "YInput", inheritAttrs: false });
 defineProps<InputProps>();
 const emits = defineEmits<{ (name: "change", event: Event): void }>();
 
-const model = defineModel({
-  type: String,
+const model = defineModel<string | number>({
+  type: [String, Number],
   default: "",
 });
 
@@ -25,5 +25,12 @@ const onChange = (event: Event) => {
 </script>
 
 <template>
-  <input :style="style" :type="type || 'text'" :class="classNames" :placeholder="placeholder" @input="onChange" />
+  <input
+    :style="style"
+    :value="model"
+    :type="type || 'text'"
+    :class="classNames"
+    :placeholder="placeholder"
+    @input="onChange"
+  />
 </template>

@@ -10,8 +10,9 @@ const emits = defineEmits<{
   (e: "update:modelValue", value: string): void;
 }>();
 
-const data = reactive({
-  value: "",
+const data = reactive<any>({
+  value: "3333",
+  data: { a: "33333lll" },
 });
 const config = computed<ConfigList>(() => {
   return [
@@ -31,8 +32,14 @@ const config = computed<ConfigList>(() => {
           uuid: "2",
           component: "YInput",
           props: { type: "text", placeholder: props.placeholder },
-          model: { modelValue: "data.value", a: "data.cc" },
+          model: { modelValue: "data.value", a: "data.data.a" },
           // on: { change: "inputChange" },
+        },
+        {
+          uuid: "3",
+          component: "YClose",
+          show: "${!!data.value}",
+          on: { click: "clear" },
         },
       ],
     },
@@ -89,6 +96,20 @@ const events: { [key: string]: EventConfig } = {
       },
     ],
   },
+  clear: {
+    id: "",
+    type: "",
+    actions: [
+      {
+        id: "2-1",
+        type: "execute_code",
+        desc: "清空输入框",
+        params: {
+          code: "${data.value = ''}",
+        },
+      },
+    ],
+  },
 };
 
 const options = computed(() => {
@@ -97,5 +118,6 @@ const options = computed(() => {
 </script>
 
 <template>
+  {{ data.value }}
   <Render :data="options" :config="config" :slots="$slots" :events="events" />
 </template>
