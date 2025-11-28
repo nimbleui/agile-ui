@@ -5,17 +5,23 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     type: "",
     isMove: false,
     el: null as null | HTMLElement,
-    selectedIds: [],
+    selectedIds: {},
+    elements: options.elements?.map((el) => ({ ...el })) ?? [],
   };
-  console.log(options);
+
+  function findEl(id: string | number) {
+    return state.elements.find((el) => el.id == id);
+  }
 
   function mousedown(e: Event) {
     state.isMove = true;
     const target = e.target as HTMLElement;
     const handle = target.dataset.dragHandle;
-    const isGroupDrag = target.dataset.dragGroup;
+    // const isGroupDrag = target.dataset.dragGroup;
     const elementId = target.closest("[data-element-id]")?.getAttribute("data-element-id");
-    console.log(elementId);
+    if (elementId) state.selectedIds[elementId] = true;
+    if (handle) state.type = handle;
+    findEl;
   }
 
   const observe = new MutationObserver(() => {

@@ -18,22 +18,26 @@ export type CanvasAction =
 // | { type: "SET_SNAP_LINES"; payload: SnapLine[] };
 
 export interface PluginContext {
-  state: CanvasState;
+  /** 容器元素 */
+  el: HTMLElement;
+  /** 其他参数 */
+  api: Record<string, any>;
+  /** 当前操作类型 */
+  handle: string;
+  /** 更新值 */
   dispatch: (action: CanvasAction) => void;
-  canvas: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D;
-  api: Record<string, any>; // Shared API for inter-plugin communication
 }
 
 export interface Plugin {
   name: string;
-  onInit?: (context: PluginContext) => void;
-  onRender?: (context: PluginContext) => void;
-  onMouseDown?: (e: MouseEvent, context: PluginContext) => void;
-  onMouseMove?: (e: MouseEvent, context: PluginContext) => void;
-  onMouseUp?: (e: MouseEvent, context: PluginContext) => void;
-  onKeyDown?: (e: KeyboardEvent, context: PluginContext) => void;
-  onDestroy?: () => void;
+  init?: (context: PluginContext) => void;
+  render?: (context: PluginContext) => void;
+  down?: (e: MouseEvent, context: PluginContext) => void;
+  move?: (e: MouseEvent, context: PluginContext) => void;
+  up?: (e: MouseEvent, context: PluginContext) => void;
+  keyDown?: (e: KeyboardEvent, context: PluginContext) => void;
+  destroy?: () => void;
+  before?: (context: PluginContext) => boolean;
 }
 
 export interface CanvasDragOptions {
@@ -60,5 +64,7 @@ export interface StateData {
   /** 操作类型： */
   type: string;
   /** 选中的元素id */
-  selectedIds: string[];
+  selectedIds: Record<string, boolean>;
+  /** 元素信息列表 */
+  elements: ElementType[];
 }
