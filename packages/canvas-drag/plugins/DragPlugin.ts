@@ -1,10 +1,16 @@
 import { Plugin } from "../types";
 
-export const DragPlugin: Plugin = {
-  name: "DragPlugin",
-  before: (context) => context.handle == "drag",
-  down(e, context) {
-    const { handle } = context;
-    console.log(handle);
+export const dragPlugin: Plugin = {
+  name: "dragPlugin",
+  down(context) {
+    console.log(context);
+  },
+  move({ mouse, dispatch }) {
+    const { disY, disX } = mouse;
+
+    dispatch({
+      type: "APPEND_SITE",
+      payload: { disX, disY },
+    });
   },
 };

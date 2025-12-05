@@ -19,7 +19,7 @@ const show = ref(false);
 
   <InputField label="label text" placeholder="placeholder text" /> -->
 
-  <!-- <DragCanvas /> -->
+  <DragCanvas />
 
   <CanvasDrag />
 </template>

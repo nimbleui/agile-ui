@@ -2,6 +2,7 @@
 import { reactive, ref } from "vue";
 import { canvasDrag } from "../code";
 import { ElementType } from "../types";
+import { dragPlugin } from "../plugins";
 
 defineOptions({ name: "CanvasDrag" });
 const canvasRef = ref<HTMLElement>();
@@ -15,24 +16,27 @@ const elements = reactive<ElementType[]>([
 
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
-canvasDrag(() => canvasRef.value, {
+const { addElement } = canvasDrag(() => canvasRef.value, {
   elements,
-  plugins: [],
+  keyCode: "altKey",
+  plugins: [dragPlugin],
 });
+addElement(elements);
 </script>
 
 <template>
-  <div ref="canvasRef" class="canvas">
+  <div ref="canvasRef" data-drag-handle="canvas" class="canvas">
     <div
       v-for="item in elements"
       :key="item.id"
       :data-element-id="item.id"
+      data-drag-handle="drag"
       :style="{
+        ...item.style,
         width: `${item.width}px`,
         height: `${item.height}px`,
         left: `${item.left}px`,
         top: `${item.top}px`,
-        ...item.style,
       }"
     >
       <slot :item="item"> 2222 </slot>
