@@ -1,6 +1,7 @@
 import { CanvasDragOptions, ElementType, MouseInfo, PluginContext, RectInfo } from "../types";
 import { getMouseSite, getRect } from "./utils";
 import { handlePlugin } from "./handlePlugin";
+import { dispatch } from "./dispatch";
 
 export function canvasDrag(el: (() => Element | undefined) | Element | undefined, options: CanvasDragOptions) {
   const state = {
@@ -15,8 +16,10 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     rect: {} as RectInfo,
     containerRect: {} as RectInfo,
     mouse: {} as MouseInfo,
-    dispatch: (data) => {
-      console.log(data);
+    dispatch(type, payload) {
+      dispatch({ type, payload, selected: pluginContext.selected, elements: state.elements }, () => {
+        console.log(111);
+      });
     },
   };
 
@@ -91,7 +94,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
   function addElement(el: ElementType | ElementType[]) {
     if (Array.isArray(el)) {
       for (let i = 0; i < el.length; i++) {
-        state.elements.push({ ...el[i] });
+        state.elements.push(el[i]);
       }
       return;
     }

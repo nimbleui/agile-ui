@@ -8,9 +8,6 @@ export const dragPlugin: Plugin = {
   move({ mouse, dispatch }) {
     const { disY, disX } = mouse;
 
-    dispatch({
-      type: "APPEND_SITE",
-      payload: { disX, disY },
-    });
+    dispatch("APPEND_SITE", { disX, disY });
   },
 };

@@ -7,10 +7,9 @@ export interface ElementType {
   [key: string]: any;
 }
 
-export type CanvasAction =
-  | { type: "UPDATE_ELEMENT"; payload: Partial<RectInfo> & { id: string } }
-  // 追加新增的x轴和y轴的位置
-  | { type: "APPEND_SITE"; payload: { disX: number; disY: number } };
+export type CanvasAction = {
+  APPEND_SITE: { disX: number; disY: number };
+};
 
 export interface RectInfo {
   /** 距离顶部的距离 */
@@ -52,7 +51,7 @@ export interface PluginContext {
   /** 是否移动 */
   isMove: boolean;
   /** 更新值 */
-  dispatch: (action: CanvasAction) => void;
+  dispatch: <K extends keyof CanvasAction>(type: K, payload: CanvasAction[K]) => void;
 }
 
 export interface Plugin {
