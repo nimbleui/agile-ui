@@ -1,16 +1,3 @@
-export interface ElementType {
-  id: string;
-  width: number | string;
-  height: number | string;
-  top: number | string;
-  left: number | string;
-  [key: string]: any;
-}
-
-export type CanvasAction = {
-  APPEND_SITE: { disX: number; disY: number };
-};
-
 export interface RectInfo {
   /** 距离顶部的距离 */
   top: number;
@@ -21,6 +8,17 @@ export interface RectInfo {
   /** 元素的高度 */
   height: number;
 }
+
+export interface ElementType extends RectInfo {
+  /** 元素唯一标识 */
+  id: string;
+  [key: string]: any;
+}
+
+export type CanvasAction = {
+  UPDATE_ELEMENT: Record<string, Partial<RectInfo>>;
+  APPEND_SIZE: { x: number; y: number };
+};
 
 export interface MouseInfo {
   /** 鼠标按下的位置X轴 */
@@ -39,6 +37,8 @@ export interface MouseInfo {
 
 export interface PluginContext {
   /** 选中的元素id */
+  selectIds: string[];
+  /** 选中的元素 */
   selected: Record<string, ElementType>;
   /** 当前操作类型 */
   handle: string;
