@@ -1,13 +1,16 @@
-import { CanvasDragOptions, ElementType, MouseInfo, PluginContext, RectInfo } from "../types";
+import { CanvasDragOptions, ElementType, EventTypes, MouseInfo, PluginContext, RectInfo } from "../types";
 import { getMouseSite, getRect } from "./utils";
 import { handlePlugin } from "./handlePlugin";
 import { handleDispatch } from "./handleDispatch";
+import { createBindEvent } from "./events";
 
 export function canvasDrag(el: (() => Element | undefined) | Element | undefined, options: CanvasDragOptions) {
   const state = {
     el: null as HTMLElement | null,
     elements: [] as ElementType[],
   };
+
+  const { on, emit, off } = createBindEvent<EventTypes>();
 
   const pluginContext: PluginContext = {
     isMove: false,
@@ -18,9 +21,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     containerRect: {} as RectInfo,
     mouse: {} as MouseInfo,
     dispatch(type, payload) {
-      handleDispatch({ type, payload, elements: state.elements }, () => {
-        console.log(111);
-      });
+      handleDispatch({ type, payload, elements: state.elements, emit });
     },
   };
 
@@ -121,5 +122,5 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     state.elements.push(el);
   }
 
-  return { addElement };
+  return { addElement, on, off };
 }

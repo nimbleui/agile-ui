@@ -1,4 +1,5 @@
 import type { Plugin, PluginContext } from "../types";
+import maths from "./math";
 
 export function handlePlugin(plugins: Plugin[], type: keyof Omit<Plugin, "name">, options: PluginContext) {
   for (let i = 0; i < plugins.length; i++) {
@@ -6,6 +7,6 @@ export function handlePlugin(plugins: Plugin[], type: keyof Omit<Plugin, "name">
     const checked = plugin.before?.(options);
     if (checked === false) continue;
 
-    plugin[type]?.(options);
+    plugin[type]?.(options, maths);
   }
 }

@@ -295,7 +295,6 @@ export class CanvasController extends EventEmitter {
         const el = this.getElementById(id);
         if (el) this.startElementStates[id] = { ...el };
       });
-
       this.dragging = true;
       this.startPoint = { x: e.clientX, y: e.clientY };
       e.preventDefault();

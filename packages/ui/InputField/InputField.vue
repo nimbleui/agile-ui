@@ -118,6 +118,5 @@ const options = computed(() => {
 </script>
 
 <template>
-  {{ data.value }}
   <Render :data="options" :config="config" :slots="$slots" :events="events" />
 </template>

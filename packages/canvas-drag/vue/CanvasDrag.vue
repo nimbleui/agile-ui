@@ -16,12 +16,16 @@ const elements = reactive<ElementType[]>([
 
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
-const { addElement } = canvasDrag(() => canvasRef.value, {
+const { addElement, on } = canvasDrag(() => canvasRef.value, {
   elements,
   keyCode: "altKey",
   plugins: [dragPlugin],
 });
 addElement(elements);
+
+on("select", (data) => {
+  console.log(data);
+});
 </script>
 
 <template>
@@ -48,7 +52,7 @@ addElement(elements);
         :key="pos"
         data-drag-handle="size"
         :data-drag-type="pos"
-        :class="['handle', 'handle-' + pos]"
+        :class="['handle', pos]"
       ></div>
 
       <div class="handle-rotate" data-drag-handle="rotate">
@@ -69,6 +73,66 @@ addElement(elements);
 
   div {
     position: absolute;
+  }
+}
+.handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #fff;
+  border: 1px solid #007bff;
+  z-index: 10;
+
+  &.nw {
+    top: -4px;
+    left: -4px;
+    cursor: nw-resize;
+  }
+
+  &.n {
+    top: -4px;
+    left: 50%;
+    margin-left: -4px;
+    cursor: n-resize;
+  }
+
+  &.ne {
+    top: -4px;
+    right: -4px;
+    cursor: ne-resize;
+  }
+
+  &.e {
+    top: 50%;
+    right: -4px;
+    margin-top: -4px;
+    cursor: e-resize;
+  }
+
+  &.se {
+    bottom: -4px;
+    right: -4px;
+    cursor: se-resize;
+  }
+
+  &.s {
+    bottom: -4px;
+    left: 50%;
+    margin-left: -4px;
+    cursor: s-resize;
+  }
+
+  &.sw {
+    bottom: -4px;
+    left: -4px;
+    cursor: sw-resize;
+  }
+
+  &.w {
+    top: 50%;
+    left: -4px;
+    margin-top: -4px;
+    cursor: w-resize;
   }
 }
 </style>
