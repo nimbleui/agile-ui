@@ -7,8 +7,8 @@ import { dragPlugin, selectPlugin } from "../plugins";
 defineOptions({ name: "CanvasDrag" });
 const canvasRef = ref<HTMLElement>();
 
-const elements = reactive<ElementType[]>([
-  { id: "1", width: 100, height: 100, left: 50, top: 50, style: { backgroundColor: "#ff5555" } },
+const elements = ref<ElementType[]>([
+  { id: "1", width: 100, height: 100, left: 50, top: 50, angle: 45, style: { backgroundColor: "#ff5555" } },
   { id: "2", width: 100, height: 100, left: 200, top: 200, style: { backgroundColor: "#5555ff" } },
   { id: "3", width: 100, height: 100, left: 350, top: 350, style: { backgroundColor: "#55ff55" } },
   { id: "4", width: 100, height: 100, left: 500, top: 500, style: { backgroundColor: "#55ff55" } },
@@ -17,17 +17,19 @@ const elements = reactive<ElementType[]>([
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
 const { addElement, on } = canvasDrag(() => canvasRef.value, {
-  elements,
+  elements: elements.value,
   keyCode: "altKey",
   plugins: [dragPlugin, selectPlugin],
 });
-addElement(elements);
+addElement(elements.value);
 
 const data = reactive<{ selectBox: RectInfo | null; selectBounds: RectInfo | null }>({
   selectBox: null,
   selectBounds: null,
 });
-
+on("change", (list) => {
+  elements.value = list;
+});
 on("selectBox", (res) => {
   data.selectBox = res;
 });
@@ -49,18 +51,30 @@ on("selectBounds", (res) => {
         height: `${item.height}px`,
         left: `${item.left}px`,
         top: `${item.top}px`,
+        transform: `rotate(${item.angle || 0}deg)`,
       }"
     >
       <slot :item="item"> 2222 </slot>
     </div>
 
-    <div class="handle">
+    <div
+      v-if="data.selectBounds"
+      class="handle"
+      data-drag-handle="drag"
+      :style="{
+        top: `${data.selectBounds.top}px`,
+        left: `${data.selectBounds.left}px`,
+        width: `${data.selectBounds.width}px`,
+        height: `${data.selectBounds.height}px`,
+        transform: `rotate(${data.selectBounds.angle || 0}deg)`,
+      }"
+    >
       <div
         v-for="pos in handles"
         :key="pos"
         data-drag-handle="size"
         :data-drag-type="pos"
-        :class="['handle', pos]"
+        :class="['handle-pos', pos]"
       ></div>
 
       <div class="handle-rotate" data-drag-handle="rotate">
@@ -95,62 +109,69 @@ on("selectBounds", (res) => {
 }
 .handle {
   position: absolute;
-  width: 8px;
-  height: 8px;
-  background-color: #fff;
   border: 1px solid #007bff;
-  z-index: 10;
+  z-index: 999999999;
+  box-sizing: border-box;
 
-  &.nw {
-    top: -4px;
-    left: -4px;
-    cursor: nw-resize;
-  }
+  &-pos {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #fff;
+    border: 1px solid #007bff;
+    z-index: 10;
 
-  &.n {
-    top: -4px;
-    left: 50%;
-    margin-left: -4px;
-    cursor: n-resize;
-  }
+    &.nw {
+      top: -4px;
+      left: -4px;
+      cursor: nw-resize;
+    }
 
-  &.ne {
-    top: -4px;
-    right: -4px;
-    cursor: ne-resize;
-  }
+    &.n {
+      top: -4px;
+      left: 50%;
+      margin-left: -4px;
+      cursor: n-resize;
+    }
 
-  &.e {
-    top: 50%;
-    right: -4px;
-    margin-top: -4px;
-    cursor: e-resize;
-  }
+    &.ne {
+      top: -4px;
+      right: -4px;
+      cursor: ne-resize;
+    }
 
-  &.se {
-    bottom: -4px;
-    right: -4px;
-    cursor: se-resize;
-  }
+    &.e {
+      top: 50%;
+      right: -4px;
+      margin-top: -4px;
+      cursor: e-resize;
+    }
 
-  &.s {
-    bottom: -4px;
-    left: 50%;
-    margin-left: -4px;
-    cursor: s-resize;
-  }
+    &.se {
+      bottom: -4px;
+      right: -4px;
+      cursor: se-resize;
+    }
 
-  &.sw {
-    bottom: -4px;
-    left: -4px;
-    cursor: sw-resize;
-  }
+    &.s {
+      bottom: -4px;
+      left: 50%;
+      margin-left: -4px;
+      cursor: s-resize;
+    }
 
-  &.w {
-    top: 50%;
-    left: -4px;
-    margin-top: -4px;
-    cursor: w-resize;
+    &.sw {
+      bottom: -4px;
+      left: -4px;
+      cursor: sw-resize;
+    }
+
+    &.w {
+      top: 50%;
+      left: -4px;
+      margin-top: -4px;
+      cursor: w-resize;
+    }
   }
 }
 .group {

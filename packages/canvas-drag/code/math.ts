@@ -26,7 +26,7 @@ export const getCenter = (el: RectInfo): Point => {
   };
 };
 
-/** 获取元素四个点的位置 */
+/** 获取元素四个点的位置, 顺序：tl tr br bl */
 export function getCorners(el: RectInfo) {
   const center = getCenter(el);
   const { left, top, width, height, angle = 0 } = el;

@@ -1,25 +1,32 @@
-import { CanvasAction, EventTypes, PluginContext } from "../types";
+import { CanvasAction, ElementType, EventTypes, PluginContext, RectInfo } from "../types";
 import { getSelectionBounds } from "./math";
 
 interface OptionsType<K extends keyof CanvasAction> {
   type: K;
   data: PluginContext;
   payload: CanvasAction[K];
+  elements: ElementType[];
   emit: <K extends keyof EventTypes>(type: K, ...args: Parameters<EventTypes[K]>) => void;
 }
 
 /** 更新元素信息 */
 function UPDATE_ELEMENT(options: OptionsType<"UPDATE_ELEMENT">) {
-  const { data, payload, emit } = options;
+  const { elements, payload, data, emit } = options;
 
-  for (let i = 0; i < data.elements.length; i++) {
-    const element = data.elements[i];
-    const value = payload[element.id];
+  const selected: Record<string, RectInfo> = {};
+  for (let i = 0; i < elements.length; i++) {
+    const el = elements[i];
+    const value = payload[el.id];
     if (!value) continue;
-    Object.assign(element, value);
+    Object.assign(el, value);
+    selected[el.id] = el;
   }
 
-  emit("change", data.elements);
+  emit(
+    "change",
+    elements.map((el) => ({ ...el })),
+  );
+  emit("selectBounds", getSelectionBounds(data.selectIds, selected));
 }
 
 /** 选择元素ID */
@@ -31,9 +38,7 @@ function SELECT_ELEMENT_IDS(options: OptionsType<"SELECT_ELEMENT_IDS">) {
   for (let i = 0; i < payload.length; i++) {
     const id = payload[i];
     const el = data.elements.find((el) => el.id == id);
-    if (el) {
-      data.selected[id] = { ...el };
-    }
+    if (el) data.selected[id] = { ...el };
   }
   emit("selectBounds", getSelectionBounds(payload, data.selected));
 }

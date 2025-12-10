@@ -24,21 +24,10 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     containerRect: {} as RectInfo,
     mouse: {} as MouseInfo,
     dispatch(type, payload, callback) {
-      handleDispatch({ type, payload, data: pluginContext, emit });
+      handleDispatch({ type, payload, data: pluginContext, elements: state.elements, emit });
       callback?.(pluginContext);
     },
   };
-
-  // function setSelect() {
-  //   pluginContext.selected = {};
-  //   for (let i = 0; i < pluginContext.selectIds.length; i++) {
-  //     const id = pluginContext.selectIds[i];
-  //     const el = state.elements.find((el) => el.id == id);
-  //     if (el) {
-  //       pluginContext.selected[id] = { ...el };
-  //     }
-  //   }
-  // }
 
   function mousedown(e: MouseEvent | TouchEvent) {
     e.preventDefault();
@@ -61,6 +50,12 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     pluginContext.multiSelect = !!(options.keyCode && e[options.keyCode]);
 
     handlePlugin(options.plugins, "down", { ...pluginContext });
+
+    for (let i = 0; i < pluginContext.selectIds.length; i++) {
+      const id = pluginContext.selectIds[i];
+      const el = state.elements.find((el) => el.id == id);
+      if (el) pluginContext.selected[id] = { ...el };
+    }
     document.addEventListener("mousemove", mousemove);
     document.addEventListener("touchmove", mousemove);
 

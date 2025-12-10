@@ -4,7 +4,6 @@ export const dragPlugin: Plugin = {
   name: "dragPlugin",
   move({ mouse, dispatch, selected, selectIds }) {
     const { disY, disX } = mouse;
-
     const data: Record<string, Partial<RectInfo>> = {};
     for (let i = 0; i < selectIds.length; i++) {
       const id = selectIds[i];

@@ -5,9 +5,7 @@ export const selectPlugin: Plugin = {
   name: "sizePlugin",
   down({ hoveredId, selectIds, multiSelect, dispatch, activeTool }) {
     // 点击画布空白区域，取消选择
-    if (activeTool == "canvas") {
-      dispatch("SELECT_ELEMENT_IDS", []);
-    }
+    if (activeTool == "canvas") dispatch("SELECT_ELEMENT_IDS", []);
 
     if (!hoveredId) return;
     let ids: string[];
@@ -16,7 +14,6 @@ export const selectPlugin: Plugin = {
     } else {
       ids = [hoveredId];
     }
-
     dispatch("SELECT_ELEMENT_IDS", ids);
   },
   move({ mouse, activeTool, containerRect, multiSelect, dispatch }) {
