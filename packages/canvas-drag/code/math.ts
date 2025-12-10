@@ -46,6 +46,33 @@ export function getCorners(el: RectInfo) {
   ];
 }
 
+/** 获取元素的信息 */
+export function getBoundingBox(el: RectInfo) {
+  const corners = getCorners(el);
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+
+  corners.forEach((p) => {
+    minX = Math.min(minX, p.left);
+    minY = Math.min(minY, p.top);
+    maxX = Math.max(maxX, p.left);
+    maxY = Math.max(maxY, p.top);
+  });
+
+  return {
+    minX,
+    minY,
+    maxX,
+    maxY,
+    width: maxX - minX,
+    height: maxY - minY,
+    centerX: el.left + el.width / 2,
+    centerY: el.top + el.height / 2,
+  };
+}
+
 /** 获取选择的位置信息 */
 export function getSelectionBounds(ids: string[], selected: Record<string, RectInfo>) {
   let minX = Infinity,
@@ -79,5 +106,6 @@ export default {
   rotatePoint,
   getCenter,
   getCorners,
+  getBoundingBox,
   getSelectionBounds,
 };

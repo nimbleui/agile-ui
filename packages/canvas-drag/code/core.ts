@@ -14,27 +14,31 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
 
   const pluginContext: PluginContext = {
     isMove: false,
-    handle: "",
+    activeTool: "",
+    hoveredId: null,
+    elements: [],
     selected: {},
     selectIds: [],
+    multiSelect: false,
     rect: {} as RectInfo,
     containerRect: {} as RectInfo,
     mouse: {} as MouseInfo,
-    dispatch(type, payload) {
-      handleDispatch({ type, payload, elements: state.elements, emit });
+    dispatch(type, payload, callback) {
+      handleDispatch({ type, payload, data: pluginContext, emit });
+      callback?.(pluginContext);
     },
   };
 
-  function setSelect() {
-    pluginContext.selected = {};
-    for (let i = 0; i < pluginContext.selectIds.length; i++) {
-      const id = pluginContext.selectIds[i];
-      const el = state.elements.find((el) => el.id == id);
-      if (el) {
-        pluginContext.selected[id] = { ...el };
-      }
-    }
-  }
+  // function setSelect() {
+  //   pluginContext.selected = {};
+  //   for (let i = 0; i < pluginContext.selectIds.length; i++) {
+  //     const id = pluginContext.selectIds[i];
+  //     const el = state.elements.find((el) => el.id == id);
+  //     if (el) {
+  //       pluginContext.selected[id] = { ...el };
+  //     }
+  //   }
+  // }
 
   function mousedown(e: MouseEvent | TouchEvent) {
     e.preventDefault();
@@ -42,21 +46,9 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     const target = e.target as HTMLElement;
     const handle = target.dataset.dragHandle;
     const id = target.closest("[data-element-id]")?.getAttribute("data-element-id");
-    if (handle) pluginContext.handle = handle;
-
-    // 判断当前有没有选择
-    if (id) {
-      if (options.keyCode && e[options.keyCode]) {
-        if (pluginContext.selectIds.includes(id)) {
-          pluginContext.selectIds = pluginContext.selectIds.filter((el) => el !== id);
-        } else {
-          pluginContext.selectIds.push(id);
-        }
-      } else {
-        pluginContext.selectIds = [id];
-      }
-    }
-    setSelect();
+    if (handle) pluginContext.activeTool = handle;
+    if (id && !handle) pluginContext.activeTool = "drag";
+    pluginContext.elements = state.elements.map((el) => ({ ...el }));
     // 获取容器的信息
     const react = getRect(state.el);
     pluginContext.containerRect = react;
@@ -65,8 +57,10 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     const { clientX, clientY } = getMouseSite(e);
     pluginContext.mouse.startX = clientX;
     pluginContext.mouse.startY = clientY;
+    pluginContext.hoveredId = id || null;
+    pluginContext.multiSelect = !!(options.keyCode && e[options.keyCode]);
 
-    handlePlugin(options.plugins, "down", pluginContext);
+    handlePlugin(options.plugins, "down", { ...pluginContext });
     document.addEventListener("mousemove", mousemove);
     document.addEventListener("touchmove", mousemove);
 
@@ -85,18 +79,24 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     pluginContext.mouse.disX = clientX - pluginContext.mouse.startX;
     pluginContext.mouse.disY = clientY - pluginContext.mouse.startY;
 
-    handlePlugin(options.plugins, "move", pluginContext);
+    handlePlugin(options.plugins, "move", { ...pluginContext });
   }
 
   function mouseup(e: MouseEvent | TouchEvent) {
     e.preventDefault();
     pluginContext.isMove = false;
-    console.log(e);
+    // 鼠标位置
+    const { clientX, clientY } = getMouseSite(e);
+
+    pluginContext.mouse.endX = clientX - pluginContext.mouse.startX;
+    pluginContext.mouse.endY = clientY - pluginContext.mouse.startY;
     document.removeEventListener("mousemove", mousemove);
     document.removeEventListener("touchmove", mousemove);
 
     document.removeEventListener("mouseup", mouseup);
     document.removeEventListener("touchend", mouseup);
+
+    handlePlugin(options.plugins, "up", { ...pluginContext });
   }
 
   const observe = new MutationObserver(() => {

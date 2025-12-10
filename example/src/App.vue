@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { Dialog, InputField, DragCanvas } from "@agile-ui/ui";
 import { CanvasDrag } from "@agile-ui/canvas-drag";
-import { ref } from "vue";
 
 defineOptions({ name: "App" });
-const a = ref("222");
-setTimeout(() => {
-  a.value = "3333";
-}, 2000);
-const show = ref(false);
+// const a = ref("222");
+// setTimeout(() => {
+//   a.value = "3333";
+// }, 2000);
+// const show = ref(false);
 </script>
 
 <template>

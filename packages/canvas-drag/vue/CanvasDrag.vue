@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { canvasDrag } from "../code";
-import { ElementType } from "../types";
-import { dragPlugin } from "../plugins";
+import { ElementType, RectInfo } from "../types";
+import { dragPlugin, selectPlugin } from "../plugins";
 
 defineOptions({ name: "CanvasDrag" });
 const canvasRef = ref<HTMLElement>();
@@ -19,12 +19,20 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 const { addElement, on } = canvasDrag(() => canvasRef.value, {
   elements,
   keyCode: "altKey",
-  plugins: [dragPlugin],
+  plugins: [dragPlugin, selectPlugin],
 });
 addElement(elements);
 
-on("select", (data) => {
-  console.log(data);
+const data = reactive<{ selectBox: RectInfo | null; selectBounds: RectInfo | null }>({
+  selectBox: null,
+  selectBounds: null,
+});
+
+on("selectBox", (res) => {
+  data.selectBox = res;
+});
+on("selectBounds", (res) => {
+  data.selectBounds = res;
 });
 </script>
 
@@ -60,7 +68,17 @@ on("select", (data) => {
       </div>
     </div>
 
-    <div data-drag-handle="group" class=""></div>
+    <div
+      v-if="data.selectBox"
+      data-drag-handle="group"
+      class="group"
+      :style="{
+        top: `${data.selectBox.top}px`,
+        left: `${data.selectBox.left}px`,
+        width: `${data.selectBox.width}px`,
+        height: `${data.selectBox.height}px`,
+      }"
+    ></div>
   </div>
 </template>
 
@@ -134,5 +152,13 @@ on("select", (data) => {
     margin-top: -4px;
     cursor: w-resize;
   }
+}
+.group {
+  position: absolute;
+  box-sizing: border-box;
+  background-color: rgba(0, 123, 255, 0.2);
+  border: 1px solid #007bff;
+  pointer-events: none;
+  z-index: 99999;
 }
 </style>
