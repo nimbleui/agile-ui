@@ -2,7 +2,7 @@
 import { reactive, ref } from "vue";
 import { canvasDrag } from "../code";
 import { ElementType, RectInfo } from "../types";
-import { dragPlugin, selectPlugin } from "../plugins";
+import { dragPlugin, selectPlugin, rotatePlugin } from "../plugins";
 
 defineOptions({ name: "CanvasDrag" });
 const canvasRef = ref<HTMLElement>();
@@ -19,7 +19,7 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 const { addElement, on } = canvasDrag(() => canvasRef.value, {
   elements: elements.value,
   keyCode: "altKey",
-  plugins: [dragPlugin, selectPlugin],
+  plugins: [dragPlugin, selectPlugin, rotatePlugin],
 });
 addElement(elements.value);
 
@@ -181,5 +181,28 @@ on("selectBounds", (res) => {
   border: 1px solid #007bff;
   pointer-events: none;
   z-index: 99999;
+}
+.handle-rotate {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  margin-left: -4px;
+  width: 8px;
+  height: 8px;
+  background-color: #fff;
+  border: 1px solid #007bff;
+  border-radius: 50%;
+  cursor: grab;
+  z-index: 10;
+
+  &-line {
+    position: absolute;
+    top: 8px;
+    left: 3px;
+    width: 1px;
+    height: 17px;
+    background-color: #007bff;
+    pointer-events: none;
+  }
 }
 </style>

@@ -106,10 +106,10 @@ export interface MathTypes {
 export interface Plugin {
   name: string;
   init?: (context: PluginContext) => void;
-  down?: (context: PluginContext, math: MathTypes) => void;
-  move?: (context: PluginContext, math: MathTypes) => void;
-  up?: (context: PluginContext, math: MathTypes) => void;
-  keyDown?: (context: PluginContext, math: MathTypes) => void;
+  down?: (context: PluginContext, maths: MathTypes) => void;
+  move?: (context: PluginContext, maths: MathTypes) => void;
+  up?: (context: PluginContext, maths: MathTypes) => void;
+  keyDown?: (context: PluginContext, maths: MathTypes) => void;
   destroy?: () => void;
   before?: (context: PluginContext) => boolean;
 }
