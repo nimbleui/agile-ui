@@ -19,7 +19,7 @@ export const rotatePlugin: Plugin = {
     downData.centerX = center.left;
     downData.angle = Math.atan2(startY - (center.top + top), startX - (center.left + left));
   },
-  move({ mouse, dispatch, selected, selectIds, containerRect }) {
+  move({ mouse, selected, selectIds, containerRect, dispatch }) {
     const { moveX, moveY } = mouse;
     const { left, top } = containerRect;
 

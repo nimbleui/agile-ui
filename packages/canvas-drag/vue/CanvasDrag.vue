@@ -2,7 +2,7 @@
 import { reactive, ref } from "vue";
 import { canvasDrag } from "../code";
 import { ElementType, RectInfo } from "../types";
-import { dragPlugin, selectPlugin, rotatePlugin } from "../plugins";
+import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin } from "../plugins";
 
 defineOptions({ name: "CanvasDrag" });
 const canvasRef = ref<HTMLElement>();
@@ -17,9 +17,9 @@ const elements = ref<ElementType[]>([
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
 const { addElement, on } = canvasDrag(() => canvasRef.value, {
-  elements: elements.value,
   keyCode: "altKey",
-  plugins: [dragPlugin, selectPlugin, rotatePlugin],
+  elements: elements.value,
+  plugins: [dragPlugin, selectPlugin, rotatePlugin, scalePlugin],
 });
 addElement(elements.value);
 
@@ -72,7 +72,7 @@ on("selectBounds", (res) => {
       <div
         v-for="pos in handles"
         :key="pos"
-        data-drag-handle="size"
+        data-drag-handle="scale"
         :data-drag-type="pos"
         :class="['handle-pos', pos]"
       ></div>

@@ -57,6 +57,8 @@ export interface PluginContext {
   hoveredId: string | null;
   /** 当前操作类型 */
   activeTool: string;
+  /** 当前操作类型值 */
+  activeToolType?: string;
   /** 当前元素的位置信息 */
   rect: RectInfo;
   /** 容器元素的位置信息 */

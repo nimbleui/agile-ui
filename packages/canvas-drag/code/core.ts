@@ -34,9 +34,11 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     pluginContext.isMove = true;
     const target = e.target as HTMLElement;
     const handle = target.dataset.dragHandle;
+    const handleType = target.dataset.dragType;
     const id = target.closest("[data-element-id]")?.getAttribute("data-element-id");
     if (handle) pluginContext.activeTool = handle;
     if (id && !handle) pluginContext.activeTool = "drag";
+    pluginContext.activeToolType = handleType;
     pluginContext.elements = state.elements.map((el) => ({ ...el }));
     // 获取容器的信息
     const react = getRect(state.el);
