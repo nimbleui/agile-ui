@@ -1,6 +1,7 @@
 import { Plugin, RectInfo } from "../types";
 
 let boxRect: RectInfo | null;
+/** 选择插件 */
 export const selectPlugin: Plugin = {
   name: "sizePlugin",
   down({ hoveredId, selectIds, multiSelect, dispatch, activeTool }) {

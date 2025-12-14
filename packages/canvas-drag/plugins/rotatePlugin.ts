@@ -5,6 +5,7 @@ const downData = {
   centerX: 0,
   centerY: 0,
 };
+/** 旋转插件 */
 export const rotatePlugin: Plugin = {
   name: "rotatePlugin",
   before: ({ activeTool }) => activeTool === "rotate",

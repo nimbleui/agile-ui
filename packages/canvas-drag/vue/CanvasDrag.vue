@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { canvasDrag } from "../code";
+import { canvasDrag } from "../core";
 import { ElementType, RectInfo } from "../types";
-import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin } from "../plugins";
+import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin, absorbPlugin } from "../plugins";
 
 defineOptions({ name: "CanvasDrag" });
 const canvasRef = ref<HTMLElement>();
@@ -11,7 +11,7 @@ const elements = ref<ElementType[]>([
   { id: "1", width: 100, height: 100, left: 50, top: 50, angle: 45, style: { backgroundColor: "#ff5555" } },
   { id: "2", width: 100, height: 100, left: 200, top: 200, style: { backgroundColor: "#5555ff" } },
   { id: "3", width: 100, height: 100, left: 350, top: 350, style: { backgroundColor: "#55ff55" } },
-  { id: "4", width: 100, height: 100, left: 500, top: 500, style: { backgroundColor: "#55ff55" } },
+  // { id: "4", width: 100, height: 100, left: 500, top: 500, style: { backgroundColor: "#55ff55" } },
 ]);
 
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
@@ -19,7 +19,7 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 const { addElement, on } = canvasDrag(() => canvasRef.value, {
   keyCode: "altKey",
   elements: elements.value,
-  plugins: [dragPlugin, selectPlugin, rotatePlugin, scalePlugin],
+  plugins: [dragPlugin, selectPlugin, rotatePlugin, scalePlugin, absorbPlugin],
 });
 addElement(elements.value);
 

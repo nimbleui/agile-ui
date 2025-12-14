@@ -1,7 +1,9 @@
 import { Plugin, RectInfo } from "../types";
 
+/** 拖拽插件 */
 export const dragPlugin: Plugin = {
   name: "dragPlugin",
+  enforce: "pre",
   before: ({ activeTool }) => activeTool === "drag",
   move({ mouse, dispatch, selected, selectIds }) {
     const { disY, disX } = mouse;

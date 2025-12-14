@@ -27,6 +27,8 @@ export type CanvasAction = {
   SELECT_ELEMENT_IDS: string[];
   /** 更新选择元素的大小 */
   SELECT_BOX: RectInfo | null;
+  /** 更新辅助线 */
+  UPDATE_GUIDES: { type: "vertical" | "horizontal"; position: number };
 };
 
 export interface MouseInfo {
@@ -71,7 +73,12 @@ export interface PluginContext {
   elements: ElementType[];
   /** 是否多选 */
   multiSelect: boolean;
-  /** 更新值, callback：更新完成在执行 */
+  /**
+   * 更新值
+   * @param type UPDATE_ELEMENT: 更新元素信息 | SELECT_ELEMENT_IDS: 更新选择元素ID | SELECT_BOX: 更新选择元素的大小
+   * @param payload 对应 type 的参数
+   * @param callback 更新完成在执行的回调
+   */
   dispatch: <K extends keyof CanvasAction>(
     type: K,
     payload: CanvasAction[K],
@@ -84,7 +91,7 @@ export interface MathTypes {
   degreesToRadians: (deg: number) => number;
   /** 弧度转角度 */
   radiansToDegrees: (deg: number) => number;
-  /** 旋转点 */
+  /** 旋转后的点坐标 */
   rotatePoint: (point: Point, center: Point, angleDegrees: number) => Point;
   /** 获取元素的中心点 */
   getCenter: (el: RectInfo) => Point;
@@ -106,13 +113,21 @@ export interface MathTypes {
 }
 
 export interface Plugin {
+  /** 插件名称 */
   name: string;
+  /** 执行顺序，默认：normal， pre -> normal -> post */
+  enforce?: "pre" | "post" | "normal";
+  /** 插件初始化时触发 */
   init?: (context: PluginContext) => void;
+  /** 鼠标按下时触发 */
   down?: (context: PluginContext, maths: MathTypes) => void;
+  /** 鼠标移动时触发 */
   move?: (context: PluginContext, maths: MathTypes) => void;
+  /** 鼠标抬起时触发 */
   up?: (context: PluginContext, maths: MathTypes) => void;
+  /** 键盘按下时触发 */
   keyDown?: (context: PluginContext, maths: MathTypes) => void;
-  destroy?: () => void;
+  /** 插件生效的条件 */
   before?: (context: PluginContext) => boolean;
 }
 

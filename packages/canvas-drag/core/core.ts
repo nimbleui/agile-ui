@@ -1,6 +1,6 @@
 import { CanvasDragOptions, ElementType, EventTypes, MouseInfo, PluginContext, RectInfo } from "../types";
 import { getMouseSite, getRect } from "./utils";
-import { handlePlugin } from "./handlePlugin";
+import { pluginExecute } from "./handlePlugin";
 import { handleDispatch } from "./handleDispatch";
 import { createBindEvent } from "./events";
 
@@ -51,7 +51,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     pluginContext.hoveredId = id || null;
     pluginContext.multiSelect = !!(options.keyCode && e[options.keyCode]);
 
-    handlePlugin(options.plugins, "down", { ...pluginContext });
+    pluginExecute(options.plugins, "down", { ...pluginContext });
 
     for (let i = 0; i < pluginContext.selectIds.length; i++) {
       const id = pluginContext.selectIds[i];
@@ -76,7 +76,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     pluginContext.mouse.disX = clientX - pluginContext.mouse.startX;
     pluginContext.mouse.disY = clientY - pluginContext.mouse.startY;
 
-    handlePlugin(options.plugins, "move", { ...pluginContext });
+    pluginExecute(options.plugins, "move", { ...pluginContext });
   }
 
   function mouseup(e: MouseEvent | TouchEvent) {
@@ -93,7 +93,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     document.removeEventListener("mouseup", mouseup);
     document.removeEventListener("touchend", mouseup);
 
-    handlePlugin(options.plugins, "up", { ...pluginContext });
+    pluginExecute(options.plugins, "up", { ...pluginContext });
   }
 
   const observe = new MutationObserver(() => {

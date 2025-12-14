@@ -1,5 +1,6 @@
 import { Plugin, RectInfo } from "../types";
 
+/** 缩放插件 */
 export const scalePlugin: Plugin = {
   name: "scalePlugin",
   before: ({ activeTool }) => activeTool === "scale",
