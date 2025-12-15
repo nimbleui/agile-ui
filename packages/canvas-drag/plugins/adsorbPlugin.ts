@@ -4,7 +4,7 @@ import { Plugin, RectInfo } from "../types";
 export const absorbPlugin: Plugin = {
   name: "absorbPlugin",
   before: ({ activeTool }) => activeTool === "drag",
-  move({ selectIds, selected, elements, mouse, dispatch }, maths) {
+  move({ selectIds, selected, mouse, dispatch, forEach }, maths) {
     const { disX, disY } = mouse;
     const bounds = maths.getSelectionBounds(selectIds, selected);
     if (!bounds) return;
@@ -25,11 +25,9 @@ export const absorbPlugin: Plugin = {
     const x = { gap: Infinity, direction: "" };
     const y = { gap: Infinity, direction: "" };
 
-    for (let i = 0; i < elements.length; i++) {
-      const el = elements[i];
-      if (selected[el.id]) continue;
-      const rect = maths.getBoundingBox(el);
-
+    forEach(({ selected, moveEl }) => {
+      if (selected) return;
+      const rect = maths.getBoundingBox(moveEl);
       const targetXPoints = [rect.minX, rect.centerX, rect.maxX];
       const targetYPoints = [rect.minY, rect.centerY, rect.maxY];
 
@@ -56,25 +54,22 @@ export const absorbPlugin: Plugin = {
           }
         }
       }
-    }
+    });
 
     const xChecked = Math.abs(x.gap) < 5;
     const yChecked = Math.abs(y.gap) < 5;
     if (!xChecked && !yChecked) return;
 
     const data: Record<string, Partial<RectInfo>> = {};
-    for (let i = 0; i < selectIds.length; i++) {
-      const id = selectIds[i];
-      const el = selected[id];
-
+    forEach(({ el }) => {
       let left = parseInt(`${el.left}`) + disX;
       if (xChecked) left += x.gap;
 
       let top = parseInt(`${el.top}`) + disY;
       if (yChecked) top += y.gap;
 
-      data[id] = { left, top };
-    }
+      data[el.id] = { left, top };
+    }, true);
 
     dispatch("UPDATE_ELEMENT", data);
   },

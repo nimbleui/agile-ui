@@ -1,9 +1,9 @@
-import { CanvasAction, ElementType, EventTypes, PluginContext, RectInfo } from "../types";
+import { CanvasAction, ElementType, EventTypes, PluginType, RectInfo } from "../types";
 import { getSelectionBounds } from "./math";
 
 interface OptionsType<K extends keyof CanvasAction> {
   type: K;
-  data: PluginContext;
+  data: PluginType;
   payload: CanvasAction[K];
   elements: ElementType[];
   emit: <K extends keyof EventTypes>(type: K, ...args: Parameters<EventTypes[K]>) => void;
@@ -31,13 +31,13 @@ function UPDATE_ELEMENT(options: OptionsType<"UPDATE_ELEMENT">) {
 
 /** 选择元素ID */
 function SELECT_ELEMENT_IDS(options: OptionsType<"SELECT_ELEMENT_IDS">) {
-  const { data, payload, emit } = options;
+  const { data, payload, emit, elements } = options;
 
   data.selectIds = payload;
   data.selected = {};
   for (let i = 0; i < payload.length; i++) {
     const id = payload[i];
-    const el = data.elements.find((el) => el.id == id);
+    const el = elements.find((el) => el.id == id);
     if (el) data.selected[id] = { ...el };
   }
   emit("selectBounds", getSelectionBounds(payload, data.selected));

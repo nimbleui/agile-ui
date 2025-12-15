@@ -20,7 +20,7 @@ export const rotatePlugin: Plugin = {
     downData.centerX = center.left;
     downData.angle = Math.atan2(startY - (center.top + top), startX - (center.left + left));
   },
-  move({ mouse, selected, selectIds, containerRect, dispatch }) {
+  move({ mouse, containerRect, forEach, dispatch }) {
     const { moveX, moveY } = mouse;
     const { left, top } = containerRect;
 
@@ -28,13 +28,10 @@ export const rotatePlugin: Plugin = {
     const angleDiff = (angle - downData.angle) * (180 / Math.PI);
 
     const data: Record<string, Partial<RectInfo>> = {};
-    for (let i = 0; i < selectIds.length; i++) {
-      const id = selectIds[i];
-      const el = selected[id];
-      if (!el) continue;
+    forEach(({ el }) => {
+      data[el.id] = { angle: (el.angle || 0) + angleDiff };
+    }, true);
 
-      data[id] = { angle: (el.angle || 0) + angleDiff };
-    }
     dispatch("UPDATE_ELEMENT", data);
   },
 };

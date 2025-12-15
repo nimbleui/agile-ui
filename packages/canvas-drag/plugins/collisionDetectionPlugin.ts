@@ -4,13 +4,8 @@ import { Plugin } from "../types";
 export const collisionDetectionPlugin: Plugin = {
   name: "collisionDetectionPlugin",
   enforce: "post",
-  move({ elements, selectIds, selected }, maths) {
+  move({ selectIds, selected }, maths) {
     const bounds = maths.getSelectionBounds(selectIds, selected);
     if (!bounds) return;
-
-    for (let i = 0; i < elements.length; i++) {
-      const el = elements[i];
-      if (selected[el.id]) continue;
-    }
   },
 };

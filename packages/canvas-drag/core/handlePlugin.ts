@@ -1,5 +1,6 @@
-import type { Plugin, PluginContext } from "../types";
+import type { ElementType, EventTypes, Plugin, PluginContext, PluginType } from "../types";
 import maths from "./math";
+import { handleDispatch } from "./handleDispatch";
 
 /**
  * 分类插件
@@ -20,20 +21,56 @@ export function handlePlugin(plugins: Plugin[]) {
   return [pre, normal, post];
 }
 
+function forEachElement(options: PluginType) {
+  const { elements, selected } = options;
+  return (
+    callback: (data: { selected: boolean; el: ElementType; moveEl: ElementType }) => void,
+    isSelect?: boolean,
+  ) => {
+    for (let i = 0; i < elements.length; i++) {
+      const moveEl = elements[i];
+      // 按下时的元素信息
+      const el = selected[moveEl.id];
+      if (isSelect) {
+        if (el) callback({ selected: true, el, moveEl });
+        continue;
+      }
+
+      callback({ selected: !!el, el, moveEl });
+    }
+  };
+}
+
 /**
  * 执行插件
  * @param plugins
  */
-export function pluginExecute(plugins: Plugin[], type: keyof Omit<Plugin, "name" | "enforce">, options: PluginContext) {
+export function pluginExecute(
+  plugins: Plugin[],
+  type: keyof Omit<Plugin, "name" | "enforce">,
+  options: PluginType,
+  emit: <K extends keyof EventTypes>(type: K, ...args: Parameters<EventTypes[K]>) => void,
+) {
   const pluginList = handlePlugin(plugins);
+  const forEach = forEachElement(options);
+  const { elements, selected, selectIds, ...other } = options;
+  const pluginContext: PluginContext = {
+    forEach,
+    ...other,
+    selected: { ...selected },
+    selectIds: [...selectIds],
+    dispatch(type, payload) {
+      handleDispatch({ type, payload, data: options, elements, emit });
+    },
+  };
+
   for (let i = 0; i < pluginList.length; i++) {
     const item = pluginList[i];
-
     for (let j = 0; j < item.length; j++) {
       const plugin = item[j];
-      const checked = plugin.before?.(options);
+      const checked = plugin.before?.(pluginContext);
       if (checked === false) continue;
-      plugin[type]?.(options, maths);
+      plugin[type]?.(pluginContext, maths);
     }
   }
 }

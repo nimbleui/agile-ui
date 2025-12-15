@@ -4,6 +4,7 @@ let boxRect: RectInfo | null;
 /** 选择插件 */
 export const selectPlugin: Plugin = {
   name: "sizePlugin",
+  enforce: "pre",
   down({ hoveredId, selectIds, multiSelect, dispatch, activeTool }) {
     // 点击画布空白区域，取消选择
     if (activeTool == "canvas") dispatch("SELECT_ELEMENT_IDS", []);
@@ -28,20 +29,17 @@ export const selectPlugin: Plugin = {
     boxRect = { left: x, top: y, width: Math.abs(disX), height: Math.abs(disY) };
     dispatch("SELECT_BOX", boxRect);
   },
-  up({ elements, activeTool, dispatch }, maths) {
+  up({ activeTool, forEach, dispatch }, maths) {
     if (activeTool != "canvas" || !boxRect) return;
 
     const ids: string[] = [];
     const { left, top, width, height } = boxRect;
-
-    for (let i = 0; i < elements.length; i++) {
-      const el = elements[i];
-      const box = maths.getBoundingBox(el);
-
+    forEach(({ moveEl }) => {
+      const box = maths.getBoundingBox(moveEl);
       if (left < box.minX && top < box.minY && left + width > box.maxX && top + height > box.maxY) {
-        ids.push(el.id);
+        ids.push(moveEl.id);
       }
-    }
+    });
 
     boxRect = null;
     dispatch("SELECT_BOX", { left: 0, top: 0, width: 0, height: 0 });

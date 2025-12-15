@@ -17,9 +17,9 @@ const elements = ref<ElementType[]>([
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
 const { addElement, on } = canvasDrag(() => canvasRef.value, {
-  keyCode: "altKey",
+  keyCode: "shiftKey",
   elements: elements.value,
-  plugins: [dragPlugin, selectPlugin, rotatePlugin, scalePlugin, absorbPlugin],
+  plugins: [scalePlugin, dragPlugin, rotatePlugin, absorbPlugin, selectPlugin],
 });
 addElement(elements.value);
 

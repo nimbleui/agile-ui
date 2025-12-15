@@ -4,7 +4,7 @@ import { Plugin, RectInfo } from "../types";
 export const scalePlugin: Plugin = {
   name: "scalePlugin",
   before: ({ activeTool }) => activeTool === "scale",
-  move({ mouse, dispatch, selected, selectIds, activeToolType, containerRect }, maths) {
+  move({ mouse, activeToolType, containerRect, dispatch, forEach }, maths) {
     const { moveX, moveY, startX, startY } = mouse;
     const { left, top } = containerRect;
 
@@ -12,9 +12,7 @@ export const scalePlugin: Plugin = {
     const move = { left: moveX - left, top: moveY - top };
 
     const data: Record<string, Partial<RectInfo>> = {};
-    for (let i = 0; i < selectIds.length; i++) {
-      const id = selectIds[i];
-      const el = selected[id];
+    forEach(({ el }) => {
       const { angle = 0 } = el;
       const center = maths.getCenter(el);
 
@@ -51,13 +49,13 @@ export const scalePlugin: Plugin = {
       // 将新中心点旋转回原始旋转角度，以找到实际的 x/y
       const rotatedCenter = maths.rotatePoint(newCenter, center, angle);
 
-      data[id] = {
+      data[el.id] = {
         width: newWidth,
         height: newHeight,
         top: rotatedCenter.top - newHeight / 2,
         left: rotatedCenter.left - newWidth / 2,
       };
-    }
+    }, true);
 
     dispatch("UPDATE_ELEMENT", data);
   },

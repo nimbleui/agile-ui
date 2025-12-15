@@ -5,14 +5,14 @@ export const dragPlugin: Plugin = {
   name: "dragPlugin",
   enforce: "pre",
   before: ({ activeTool }) => activeTool === "drag",
-  move({ mouse, dispatch, selected, selectIds }) {
+  move({ mouse, dispatch, forEach }) {
     const { disY, disX } = mouse;
     const data: Record<string, Partial<RectInfo>> = {};
-    for (let i = 0; i < selectIds.length; i++) {
-      const id = selectIds[i];
-      const el = selected[id];
-      data[id] = { left: parseInt(`${el.left}`) + disX, top: parseInt(`${el.top}`) + disY };
-    }
+
+    forEach(({ el }) => {
+      data[el.id] = { left: parseInt(`${el.left}`) + disX, top: parseInt(`${el.top}`) + disY };
+    }, true);
+
     dispatch("UPDATE_ELEMENT", data);
   },
 };

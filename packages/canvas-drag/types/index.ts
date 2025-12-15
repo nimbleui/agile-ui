@@ -50,7 +50,7 @@ export interface MouseInfo {
   endY: number;
 }
 
-export interface PluginContext {
+export interface PluginType {
   /** 选中的元素id */
   selectIds: string[];
   /** 选中的元素 */
@@ -73,17 +73,6 @@ export interface PluginContext {
   elements: ElementType[];
   /** 是否多选 */
   multiSelect: boolean;
-  /**
-   * 更新值
-   * @param type UPDATE_ELEMENT: 更新元素信息 | SELECT_ELEMENT_IDS: 更新选择元素ID | SELECT_BOX: 更新选择元素的大小
-   * @param payload 对应 type 的参数
-   * @param callback 更新完成在执行的回调
-   */
-  dispatch: <K extends keyof CanvasAction>(
-    type: K,
-    payload: CanvasAction[K],
-    callback?: (data: Omit<PluginContext, "dispatch">) => void,
-  ) => void;
 }
 
 export interface MathTypes {
@@ -112,6 +101,36 @@ export interface MathTypes {
   };
 }
 
+export type PluginContext = Omit<PluginType, "elements"> & {
+  /**
+   * 循环元素
+   * callback 回调函数：
+   *  第一个参数：el: 鼠标按下时的元素信息、selected：是否选中、moveEl：鼠标移动时的元素信息
+   *  第二参数：是否只循环选中的元素
+   */
+  forEach: (
+    callback: (data: {
+      /** 鼠标按下时的元素信息 */
+      el: ElementType;
+      /** 是否选中 */
+      selected: boolean;
+      /** 鼠标移动时的元素信息 */
+      moveEl: ElementType;
+    }) => void,
+    selected?: boolean,
+  ) => void;
+  /**
+   * 更新值
+   * @param type UPDATE_ELEMENT: 更新元素信息 | SELECT_ELEMENT_IDS: 更新选择元素ID | SELECT_BOX: 更新选择元素的大小
+   * @param payload 对应 type 的参数
+   * @param callback 更新完成在执行的回调
+   */
+  dispatch: <K extends keyof CanvasAction>(
+    type: K,
+    payload: CanvasAction[K],
+    callback?: (data: Omit<PluginType, "dispatch">) => void,
+  ) => void;
+};
 export interface Plugin {
   /** 插件名称 */
   name: string;
