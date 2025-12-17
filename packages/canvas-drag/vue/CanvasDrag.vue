@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { reactive, ref, StyleValue } from "vue";
 import { canvasDrag } from "../core";
-import { ElementType, RectInfo } from "../types";
-import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin, absorbPlugin } from "../plugins";
+import { ElementType, GuidesList, GuidesType, RectInfo } from "../types";
+import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin, absorbPlugin, smartGuidesPlugin } from "../plugins";
 
 defineOptions({ name: "CanvasDrag" });
 const canvasRef = ref<HTMLElement>();
@@ -19,13 +19,14 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 const { addElement, on } = canvasDrag(() => canvasRef.value, {
   keyCode: "shiftKey",
   elements: elements.value,
-  plugins: [scalePlugin, dragPlugin, rotatePlugin, absorbPlugin, selectPlugin],
+  plugins: [scalePlugin(), dragPlugin(), rotatePlugin(), absorbPlugin(), selectPlugin(), smartGuidesPlugin()],
 });
 addElement(elements.value);
 
-const data = reactive<{ selectBox: RectInfo | null; selectBounds: RectInfo | null }>({
+const data = reactive<{ selectBox: RectInfo | null; selectBounds: RectInfo | null; guides: GuidesList }>({
   selectBox: null,
   selectBounds: null,
+  guides: [],
 });
 on("change", (list) => {
   elements.value = list;
@@ -36,6 +37,22 @@ on("selectBox", (res) => {
 on("selectBounds", (res) => {
   data.selectBounds = res;
 });
+on("guides", (res) => {
+  data.guides = res;
+});
+
+const getSnapLineStyle = (line: GuidesType): StyleValue => {
+  return {
+    position: "absolute",
+    left: (line.type === "vertical" ? line.position : 0) + "px",
+    top: (line.type === "horizontal" ? line.position : 0) + "px",
+    width: line.type === "vertical" ? "1px" : "100%",
+    height: line.type === "horizontal" ? "1px" : "100%",
+    backgroundColor: "#ff00ff",
+    zIndex: "9999",
+    pointerEvents: "none",
+  };
+};
 </script>
 
 <template>
@@ -93,6 +110,8 @@ on("selectBounds", (res) => {
         height: `${data.selectBox.height}px`,
       }"
     ></div>
+
+    <div v-for="item in data.guides" :key="item.type" :style="getSnapLineStyle(item)"></div>
   </div>
 </template>
 
@@ -120,6 +139,7 @@ on("selectBounds", (res) => {
     background-color: #fff;
     border: 1px solid #007bff;
     z-index: 10;
+    border-radius: 50%;
 
     &.nw {
       top: -4px;

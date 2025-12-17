@@ -51,7 +51,8 @@ function SELECT_BOX(options: OptionsType<"SELECT_BOX">) {
 
 /** 更新辅助线 */
 function UPDATE_GUIDES(options: OptionsType<"UPDATE_GUIDES">) {
-  console.log(options);
+  const { payload, emit } = options;
+  emit("guides", payload);
 }
 
 export function handleDispatch<K extends keyof CanvasAction>(options: OptionsType<K>) {

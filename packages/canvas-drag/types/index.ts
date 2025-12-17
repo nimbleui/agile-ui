@@ -20,6 +20,13 @@ export interface ElementType extends RectInfo {
   [key: string]: any;
 }
 
+export interface GuidesType {
+  type: "vertical" | "horizontal";
+  position: number;
+}
+
+export type GuidesList = GuidesType[];
+
 export type CanvasAction = {
   /** 更新元素信息 */
   UPDATE_ELEMENT: Record<string, Partial<RectInfo>>;
@@ -28,7 +35,7 @@ export type CanvasAction = {
   /** 更新选择元素的大小 */
   SELECT_BOX: RectInfo | null;
   /** 更新辅助线 */
-  UPDATE_GUIDES: { type: "vertical" | "horizontal"; position: number };
+  UPDATE_GUIDES: GuidesList;
 };
 
 export interface MouseInfo {
@@ -157,6 +164,8 @@ export interface CanvasDragOptions {
   elements?: ElementType[];
   /** 多选时，按的是那个键 */
   keyCode?: "shiftKey" | "altKey" | "ctrlKey";
+  /** 缩放比例 */
+  zoom?: number;
 }
 
 export type EventTypes = {
@@ -165,4 +174,6 @@ export type EventTypes = {
   selectBox: (data: RectInfo | null) => void;
   selectBounds: (data: RectInfo | null) => void;
   custom: (type: string, data: any) => void;
+  /** 辅助线 */
+  guides: (data: GuidesList) => void;
 };

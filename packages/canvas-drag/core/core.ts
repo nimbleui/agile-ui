@@ -40,7 +40,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     pluginContext.containerRect = react;
 
     // 鼠标位置
-    const { clientX, clientY } = getMouseSite(e);
+    const { clientX, clientY } = getMouseSite(e, options.zoom);
     pluginContext.mouse.startX = clientX;
     pluginContext.mouse.startY = clientY;
     pluginContext.hoveredId = id || null;
@@ -64,7 +64,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     e.preventDefault();
     if (!pluginContext.isMove) return;
     // 鼠标位置
-    const { clientX, clientY } = getMouseSite(e);
+    const { clientX, clientY } = getMouseSite(e, options.zoom);
     pluginContext.mouse.moveX = clientX;
     pluginContext.mouse.moveY = clientY;
 
@@ -78,7 +78,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     e.preventDefault();
     pluginContext.isMove = false;
     // 鼠标位置
-    const { clientX, clientY } = getMouseSite(e);
+    const { clientX, clientY } = getMouseSite(e, options.zoom);
 
     pluginContext.mouse.endX = clientX - pluginContext.mouse.startX;
     pluginContext.mouse.endY = clientY - pluginContext.mouse.startY;

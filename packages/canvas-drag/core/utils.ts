@@ -2,13 +2,13 @@ export function isTouchEvent(e: any): e is TouchEvent {
   return Object.prototype.toString.call(e) == "[object TouchEvent]";
 }
 
-export function getMouseSite(e: MouseEvent | TouchEvent) {
+export function getMouseSite(e: MouseEvent | TouchEvent, zoom = 1) {
   if (isTouchEvent(e)) {
     const touche = e.touches[0];
-    return { clientX: touche.clientX, clientY: touche.clientY };
+    return { clientX: touche.clientX / zoom, clientY: touche.clientY / zoom };
   }
 
-  return { clientX: e.clientX, clientY: e.clientY };
+  return { clientX: e.clientX / zoom, clientY: e.clientY / zoom };
 }
 
 export function getRect(el: Element | null) {
