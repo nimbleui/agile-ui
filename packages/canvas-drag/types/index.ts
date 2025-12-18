@@ -23,6 +23,9 @@ export interface ElementType extends RectInfo {
 export interface GuidesType {
   type: "vertical" | "horizontal";
   position: number;
+  gap: number;
+  start: number;
+  end: number;
 }
 
 export type GuidesList = GuidesType[];

@@ -2,7 +2,7 @@
 import { reactive, ref, StyleValue } from "vue";
 import { canvasDrag } from "../core";
 import { ElementType, GuidesList, GuidesType, RectInfo } from "../types";
-import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin, absorbPlugin, smartGuidesPlugin } from "../plugins";
+import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin, smartGuidesPlugin } from "../plugins";
 
 defineOptions({ name: "CanvasDrag" });
 const canvasRef = ref<HTMLElement>();
@@ -19,7 +19,7 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 const { addElement, on } = canvasDrag(() => canvasRef.value, {
   keyCode: "shiftKey",
   elements: elements.value,
-  plugins: [scalePlugin(), dragPlugin(), rotatePlugin(), absorbPlugin(), selectPlugin(), smartGuidesPlugin()],
+  plugins: [scalePlugin(), dragPlugin(), rotatePlugin(), selectPlugin(), smartGuidesPlugin()],
 });
 addElement(elements.value);
 

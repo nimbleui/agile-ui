@@ -1,22 +1,33 @@
-import { Plugin, GuidesList, ElementType } from "../types";
+import { GuidesList, Plugin, RectInfo } from "../types";
 
-/**  辅助线插件 */
-export function smartGuidesPlugin(): Plugin {
+/** 吸附和辅助线插件 */
+export function smartGuidesPlugin(options?: { threshold: number }): Plugin {
+  const threshold = options?.threshold || 5;
   return {
     name: "smartGuidesPlugin",
-    enforce: "post",
-    move({ selectIds, forEach, dispatch }, maths) {
-      const selected: { [key: string]: ElementType } = {};
-      forEach(({ moveEl }) => (selected[moveEl.id] = moveEl), true);
+    before: ({ activeTool }) => activeTool === "drag",
+    move({ selectIds, selected, mouse, dispatch, forEach }, maths) {
+      const { disX, disY } = mouse;
       const bounds = maths.getSelectionBounds(selectIds, selected);
       if (!bounds) return;
 
-      const { left, width, top, height } = bounds;
-      const yPoints = [top, top + height / 2, top + height];
-      const xPoints = [left, left + width / 2, left + width];
+      const minX = bounds.left + disX;
+      const minY = bounds.top + disY;
+      const xPoints = [
+        { val: minX, type: "l" },
+        { val: minX + bounds.width / 2, type: "c" },
+        { val: minX + bounds.width, type: "r" },
+      ];
+      const yPoints = [
+        { val: minY, type: "t" },
+        { val: minY + bounds.height / 2, type: "c" },
+        { val: minY + bounds.height, type: "b" },
+      ];
 
-      const data: GuidesList = [];
-      forEach(({ moveEl, selected }) => {
+      const x = { gap: Infinity, direction: "", position: 0, start: 0, end: 0 };
+      const y = { gap: Infinity, direction: "", position: 0, start: 0, end: 0 };
+
+      forEach(({ selected, moveEl }) => {
         if (selected) return;
         const rect = maths.getBoundingBox(moveEl);
         const targetXPoints = [rect.minX, rect.centerX, rect.maxX];
@@ -26,8 +37,15 @@ export function smartGuidesPlugin(): Plugin {
           const item = xPoints[i];
           for (let j = 0; j < targetXPoints.length; j++) {
             const val = targetXPoints[j];
-            if (item == val) {
-              data[0] = { type: "vertical", position: val };
+            const diff = val - item.val;
+            if (Math.abs(x.gap) > Math.abs(diff)) {
+              Object.assign(x, {
+                gap: diff,
+                direction: item.type,
+                position: val,
+                start: Math.min(bounds.left, rect.minX),
+                end: Math.max(bounds.width + bounds.left, rect.maxX),
+              });
             }
           }
         }
@@ -36,16 +54,41 @@ export function smartGuidesPlugin(): Plugin {
           const item = yPoints[i];
           for (let j = 0; j < targetYPoints.length; j++) {
             const val = targetYPoints[j];
-            if (item == val) {
-              data[1] = { type: "horizontal", position: val };
+            const diff = val - item.val;
+            if (Math.abs(x.gap) > Math.abs(diff)) {
+              Object.assign(y, {
+                gap: diff,
+                direction: item.type,
+                position: val,
+                start: Math.min(bounds.top, rect.minY),
+                end: Math.max(bounds.height + bounds.top, rect.maxY),
+              });
             }
           }
         }
       });
-      dispatch(
-        "UPDATE_GUIDES",
-        data.filter((el) => el),
-      );
+
+      const xChecked = Math.abs(x.gap) < threshold;
+      const yChecked = Math.abs(y.gap) < threshold;
+
+      if (xChecked || yChecked) {
+        const data: Record<string, Partial<RectInfo>> = {};
+        forEach(({ el }) => {
+          let left = parseInt(`${el.left}`) + disX;
+          if (xChecked) left += x.gap;
+
+          let top = parseInt(`${el.top}`) + disY;
+          if (yChecked) top += y.gap;
+
+          data[el.id] = { left, top };
+        }, true);
+        dispatch("UPDATE_ELEMENT", data);
+      }
+
+      const list: GuidesList = [];
+      if (xChecked) list.push({ ...x, type: "vertical" });
+      if (yChecked) list.push({ ...y, type: "horizontal" });
+      dispatch("UPDATE_GUIDES", list);
     },
     up({ dispatch }) {
       dispatch("UPDATE_GUIDES", []);
