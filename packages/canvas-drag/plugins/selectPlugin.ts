@@ -8,9 +8,13 @@ export function selectPlugin(): Plugin {
     enforce: "pre",
     down({ hoveredId, selectIds, multiSelect, dispatch, activeTool }) {
       // 点击画布空白区域，取消选择
-      if (activeTool == "canvas") dispatch("SELECT_ELEMENT_IDS", []);
-
-      if (!hoveredId) return;
+      if (activeTool == "canvas") {
+        return dispatch("SELECT_ELEMENT_IDS", []);
+      }
+      // 如果拖拽并且没有id说明是操作选择的div
+      if (!hoveredId) {
+        return dispatch("SELECT_ELEMENT_IDS", selectIds);
+      }
       let ids: string[];
       if (multiSelect) {
         ids = selectIds.includes(hoveredId) ? selectIds.filter((id) => id !== hoveredId) : [...selectIds, hoveredId];

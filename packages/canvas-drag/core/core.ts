@@ -49,11 +49,6 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
 
     pluginExecute(options.plugins, "down", pluginContext, emit);
 
-    for (let i = 0; i < pluginContext.selectIds.length; i++) {
-      const id = pluginContext.selectIds[i];
-      const el = state.elements.find((el) => el.id == id);
-      if (el) pluginContext.selected[id] = { ...el };
-    }
     document.addEventListener("mousemove", mousemove);
     document.addEventListener("touchmove", mousemove);
 

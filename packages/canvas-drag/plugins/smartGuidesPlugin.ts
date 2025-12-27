@@ -7,11 +7,10 @@ export function smartGuidesPlugin(options?: { threshold: number }): Plugin {
     name: "smartGuidesPlugin",
     before: ({ activeTool }) => activeTool === "drag",
     move({ selectBound, mouse, dispatch, forEach }, maths) {
-      const { disX, disY } = mouse;
       if (!selectBound) return;
 
-      const minX = selectBound.left;
-      const minY = selectBound.top;
+      const minX = selectBound.left + mouse.disX;
+      const minY = selectBound.top + mouse.disY;
       const xPoints = [
         { val: minX, type: "l" },
         { val: minX + selectBound.width / 2, type: "c" },
@@ -68,17 +67,16 @@ export function smartGuidesPlugin(options?: { threshold: number }): Plugin {
 
       const xChecked = Math.abs(x.gap) < threshold;
       const yChecked = Math.abs(y.gap) < threshold;
-
       if (xChecked || yChecked) {
         const data: Record<string, Partial<RectInfo>> = {};
-        forEach(({ el }) => {
-          let left = parseInt(`${el.left}`) + disX;
+        forEach(({ moveEl }) => {
+          let left = moveEl.left;
           if (xChecked) left += x.gap;
 
-          let top = parseInt(`${el.top}`) + disY;
+          let top = moveEl.top;
           if (yChecked) top += y.gap;
 
-          data[el.id] = { left, top };
+          data[moveEl.id] = { left, top };
         }, "selected");
         dispatch("UPDATE_ELEMENT", data);
       }

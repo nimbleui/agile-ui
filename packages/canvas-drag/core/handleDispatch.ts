@@ -26,9 +26,7 @@ function UPDATE_ELEMENT(options: OptionsType<"UPDATE_ELEMENT">) {
     "change",
     elements.map((el) => ({ ...el })),
   );
-  const bounds = getSelectionBounds(data.selectIds, selected);
-  data.selectBound = bounds;
-  emit("selectBounds", bounds);
+  emit("selectBounds", getSelectionBounds(data.selectIds, selected));
 }
 
 /** 选择元素ID */

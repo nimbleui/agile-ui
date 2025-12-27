@@ -19,7 +19,7 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 const { addElement, on } = canvasDrag(() => canvasRef.value, {
   keyCode: "shiftKey",
   elements: elements.value,
-  plugins: [scalePlugin(), dragPlugin(), rotatePlugin(), selectPlugin(), smartGuidesPlugin(), collisionPlugin()],
+  plugins: [rotatePlugin(), selectPlugin(), scalePlugin(), dragPlugin(), smartGuidesPlugin(), collisionPlugin()],
 });
 addElement(elements.value);
 

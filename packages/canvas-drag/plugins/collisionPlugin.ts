@@ -37,9 +37,13 @@ export function collisionPlugin(): Plugin {
   return {
     name: "collisionPlugin",
     enforce: "post",
-    move({ selectBound, forEach, dispatch }, maths) {
+    move({ selectBound, mouse, forEach, dispatch }, maths) {
       if (!selectBound) return;
-      const corners = maths.getCorners(selectBound);
+      const corners = maths.getCorners({
+        ...selectBound,
+        left: selectBound.left + mouse.disX,
+        top: selectBound.top + mouse.disY,
+      });
       const ids: string[] = [];
 
       forEach(({ moveEl }) => {

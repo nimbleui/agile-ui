@@ -85,7 +85,7 @@ export interface PluginType {
   elements: ElementType[];
   /** 是否多选 */
   multiSelect: boolean;
-  /** 选中元素信息 */
+  /** 鼠标按下时选中元素信息 */
   selectBound: RectInfo | null;
 }
 
