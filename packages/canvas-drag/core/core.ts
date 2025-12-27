@@ -1,4 +1,4 @@
-import { CanvasDragOptions, ElementType, EventTypes, MouseInfo, PluginType, RectInfo } from "../types";
+import { ActiveTool, CanvasDragOptions, ElementType, EventTypes, MouseInfo, PluginType, RectInfo } from "../types";
 import { getMouseSite, getRect } from "./utils";
 import { pluginExecute } from "./handlePlugin";
 import { createBindEvent } from "./events";
@@ -11,9 +11,9 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
 
   const { on, emit, off } = createBindEvent<EventTypes>();
 
-  const pluginContext: PluginType = {
+  const context: PluginType = {
     isMove: false,
-    activeTool: "",
+    activeTool: null,
     hoveredId: null,
     elements: [],
     selected: {},
@@ -27,27 +27,27 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
 
   function mousedown(e: MouseEvent | TouchEvent) {
     e.preventDefault();
-    pluginContext.isMove = true;
+    context.isMove = true;
     const target = e.target as HTMLElement;
     const handle = target.dataset.dragHandle;
     const handleType = target.dataset.dragType;
     const id = target.closest("[data-element-id]")?.getAttribute("data-element-id");
-    if (handle) pluginContext.activeTool = handle;
-    if (id && !handle) pluginContext.activeTool = "drag";
-    pluginContext.activeToolType = handleType;
-    pluginContext.elements = state.elements;
+    if (handle) context.activeTool = handle as ActiveTool;
+    if (id && !handle) context.activeTool = "drag";
+    context.activeToolType = handleType;
+    context.elements = state.elements;
     // 获取容器的信息
     const react = getRect(state.el);
-    pluginContext.containerRect = react;
+    context.containerRect = react;
 
     // 鼠标位置
     const { clientX, clientY } = getMouseSite(e, options.zoom);
-    pluginContext.mouse.startX = clientX;
-    pluginContext.mouse.startY = clientY;
-    pluginContext.hoveredId = id || null;
-    pluginContext.multiSelect = !!(options.keyCode && e[options.keyCode]);
+    context.mouse.startX = clientX;
+    context.mouse.startY = clientY;
+    context.hoveredId = id || null;
+    context.multiSelect = !!(options.keyCode && e[options.keyCode]);
 
-    pluginExecute(options.plugins, "down", pluginContext, emit);
+    pluginExecute(options.plugins, "down", context, emit);
 
     document.addEventListener("mousemove", mousemove);
     document.addEventListener("touchmove", mousemove);
@@ -58,33 +58,33 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
 
   function mousemove(e: MouseEvent | TouchEvent) {
     e.preventDefault();
-    if (!pluginContext.isMove) return;
+    if (!context.isMove) return;
     // 鼠标位置
     const { clientX, clientY } = getMouseSite(e, options.zoom);
-    pluginContext.mouse.moveX = clientX;
-    pluginContext.mouse.moveY = clientY;
+    context.mouse.moveX = clientX;
+    context.mouse.moveY = clientY;
 
-    pluginContext.mouse.disX = clientX - pluginContext.mouse.startX;
-    pluginContext.mouse.disY = clientY - pluginContext.mouse.startY;
+    context.mouse.disX = clientX - context.mouse.startX;
+    context.mouse.disY = clientY - context.mouse.startY;
 
-    pluginExecute(options.plugins, "move", pluginContext, emit);
+    pluginExecute(options.plugins, "move", context, emit);
   }
 
   function mouseup(e: MouseEvent | TouchEvent) {
     e.preventDefault();
-    pluginContext.isMove = false;
+    context.isMove = false;
     // 鼠标位置
     const { clientX, clientY } = getMouseSite(e, options.zoom);
 
-    pluginContext.mouse.endX = clientX - pluginContext.mouse.startX;
-    pluginContext.mouse.endY = clientY - pluginContext.mouse.startY;
+    context.mouse.endX = clientX - context.mouse.startX;
+    context.mouse.endY = clientY - context.mouse.startY;
     document.removeEventListener("mousemove", mousemove);
     document.removeEventListener("touchmove", mousemove);
 
     document.removeEventListener("mouseup", mouseup);
     document.removeEventListener("touchend", mouseup);
 
-    pluginExecute(options.plugins, "up", pluginContext, emit);
+    pluginExecute(options.plugins, "up", context, emit);
   }
 
   const observe = new MutationObserver(() => {

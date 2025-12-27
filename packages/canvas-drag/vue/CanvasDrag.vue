@@ -71,7 +71,7 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
         transform: `rotate(${item.angle || 0}deg)`,
       }"
     >
-      <slot name="item" :item="item"> 2222 </slot>
+      <slot name="item" :item="item"></slot>
     </div>
 
     <div

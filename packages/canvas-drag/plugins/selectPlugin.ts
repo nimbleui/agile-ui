@@ -47,7 +47,7 @@ export function selectPlugin(): Plugin {
       });
 
       boxRect = null;
-      dispatch("SELECT_BOX", { left: 0, top: 0, width: 0, height: 0 });
+      dispatch("SELECT_BOX", boxRect);
       dispatch("SELECT_ELEMENT_IDS", ids);
     },
   };

@@ -21,10 +21,15 @@ export interface ElementType extends RectInfo {
 }
 
 export interface GuidesType {
+  /** 方向 */
   type: "vertical" | "horizontal";
+  /** 位置 */
   position: number;
+  /** 距离大小 */
   gap: number;
+  /** 开始位置 */
   start: number;
+  /** 结束位置 */
   end: number;
 }
 
@@ -70,7 +75,7 @@ export interface PluginType {
   /** 按下的元素 */
   hoveredId: string | null;
   /** 当前操作类型 */
-  activeTool: string;
+  activeTool: "canvas" | "drag" | "scale" | "rotate" | null;
   /** 当前操作类型值 */
   activeToolType?: string;
   /** 当前元素的位置信息 */
@@ -88,6 +93,7 @@ export interface PluginType {
   /** 鼠标按下时选中元素信息 */
   selectBound: RectInfo | null;
 }
+export type ActiveTool = PluginType["activeTool"];
 
 export interface MathTypes {
   /** 角度转弧度 */
@@ -120,7 +126,7 @@ export type PluginContext = Omit<PluginType, "elements" | "selected"> & {
    * 循环元素
    * callback 回调函数：
    *  第一个参数：el: 鼠标按下时的元素信息、selected：是否选中、moveEl：鼠标移动时的元素信息
-   *  第二参数：循环类型：all：所有  selected：选中  notSelected：没选中
+   *  第二参数：循环类型：all：所有  selected：选中  notSelected：没选中，默认是all
    */
   forEach: (
     callback: (data: {
@@ -136,7 +142,7 @@ export type PluginContext = Omit<PluginType, "elements" | "selected"> & {
   ) => void;
   /**
    * 更新值
-   * @param type UPDATE_ELEMENT: 更新元素信息 | SELECT_ELEMENT_IDS: 更新选择元素ID | SELECT_BOX: 更新选择元素的大小
+   * @param type UPDATE_ELEMENT: 更新元素信息 | SELECT_ELEMENT_IDS: 更新选择元素ID | SELECT_BOX: 更新选择元素的大小 | UPDATE_GUIDES：更新辅助线 | UPDATE_COLLISION：更新碰撞信息
    * @param payload 对应 type 的参数
    * @param callback 更新完成在执行的回调
    */
