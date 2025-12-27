@@ -1,5 +1,5 @@
 import { CanvasAction, ElementType, EventTypes, PluginType, RectInfo } from "../types";
-import { getSelectionBounds } from "./math";
+import { getBoundingBox, getSelectionBounds } from "./math";
 
 interface OptionsType<K extends keyof CanvasAction> {
   type: K;
@@ -41,7 +41,11 @@ function SELECT_ELEMENT_IDS(options: OptionsType<"SELECT_ELEMENT_IDS">) {
     if (el) data.selected[id] = { ...el };
   }
   const bounds = getSelectionBounds(data.selectIds, data.selected);
-  data.selectBound = bounds;
+  data.selectBound = null;
+  if (bounds) {
+    const react = getBoundingBox(bounds);
+    data.selectBound = { left: react.minX, top: react.minY, width: react.width, height: react.height };
+  }
   emit("selectBounds", bounds);
 }
 
