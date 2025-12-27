@@ -53,7 +53,7 @@ export function smartGuidesPlugin(options?: { threshold: number }): Plugin {
           for (let j = 0; j < targetYPoints.length; j++) {
             const val = targetYPoints[j];
             const diff = val - item.val;
-            if (Math.abs(x.gap) > Math.abs(diff)) {
+            if (Math.abs(y.gap) > Math.abs(diff)) {
               Object.assign(y, {
                 gap: diff,
                 direction: item.type,
