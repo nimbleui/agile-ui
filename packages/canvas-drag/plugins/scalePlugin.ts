@@ -56,7 +56,7 @@ export function scalePlugin(): Plugin {
           top: rotatedCenter.top - newHeight / 2,
           left: rotatedCenter.left - newWidth / 2,
         };
-      }, true);
+      }, "selected");
 
       dispatch("UPDATE_ELEMENT", data);
     },

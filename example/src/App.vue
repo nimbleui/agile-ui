@@ -20,6 +20,5 @@ defineOptions({ name: "App" });
   <InputField label="label text" placeholder="placeholder text" /> -->
 
   <DragCanvas />
-
   <CanvasDrag />
 </template>

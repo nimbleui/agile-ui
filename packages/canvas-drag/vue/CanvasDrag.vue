@@ -2,7 +2,7 @@
 import { reactive, ref, StyleValue } from "vue";
 import { canvasDrag } from "../core";
 import { ElementType, GuidesList, GuidesType, RectInfo } from "../types";
-import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin, smartGuidesPlugin } from "../plugins";
+import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin, smartGuidesPlugin, collisionPlugin } from "../plugins";
 
 defineOptions({ name: "CanvasDrag" });
 const canvasRef = ref<HTMLElement>();
@@ -19,7 +19,7 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 const { addElement, on } = canvasDrag(() => canvasRef.value, {
   keyCode: "shiftKey",
   elements: elements.value,
-  plugins: [scalePlugin(), dragPlugin(), rotatePlugin(), selectPlugin(), smartGuidesPlugin()],
+  plugins: [scalePlugin(), dragPlugin(), rotatePlugin(), selectPlugin(), smartGuidesPlugin(), collisionPlugin()],
 });
 addElement(elements.value);
 
@@ -71,7 +71,7 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
         transform: `rotate(${item.angle || 0}deg)`,
       }"
     >
-      <slot :item="item"> 2222 </slot>
+      <slot name="item" :item="item"> 2222 </slot>
     </div>
 
     <div

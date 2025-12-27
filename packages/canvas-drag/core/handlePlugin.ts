@@ -25,18 +25,23 @@ function forEachElement(options: PluginType) {
   const { elements, selected } = options;
   return (
     callback: (data: { selected: boolean; el: ElementType; moveEl: ElementType }) => void,
-    isSelect?: boolean,
+    type?: "all" | "selected" | "notSelected",
   ) => {
     for (let i = 0; i < elements.length; i++) {
       const moveEl = elements[i];
       // 按下时的元素信息
       const el = selected[moveEl.id];
-      if (isSelect) {
-        if (el) callback({ selected: true, el, moveEl });
-        continue;
+      if (type == "selected" && el) {
+        callback({ selected: true, el, moveEl });
       }
 
-      callback({ selected: !!el, el, moveEl });
+      if (type == "notSelected" && !el) {
+        callback({ selected: false, el, moveEl });
+      }
+
+      if (type == "all" || !type) {
+        callback({ selected: !!el, el, moveEl });
+      }
     }
   };
 }
@@ -53,11 +58,10 @@ export function pluginExecute(
 ) {
   const pluginList = handlePlugin(plugins);
   const forEach = forEachElement(options);
-  const { elements, selected, selectIds, ...other } = options;
+  const { elements, selectIds, ...other } = options;
   const pluginContext: PluginContext = {
     forEach,
     ...other,
-    selected: { ...selected },
     selectIds: [...selectIds],
     dispatch(type, payload) {
       handleDispatch({ type, payload, data: options, elements, emit });

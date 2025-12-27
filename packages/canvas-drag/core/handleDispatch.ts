@@ -26,7 +26,9 @@ function UPDATE_ELEMENT(options: OptionsType<"UPDATE_ELEMENT">) {
     "change",
     elements.map((el) => ({ ...el })),
   );
-  emit("selectBounds", getSelectionBounds(data.selectIds, selected));
+  const bounds = getSelectionBounds(data.selectIds, selected);
+  data.selectBound = bounds;
+  emit("selectBounds", bounds);
 }
 
 /** 选择元素ID */
@@ -40,7 +42,9 @@ function SELECT_ELEMENT_IDS(options: OptionsType<"SELECT_ELEMENT_IDS">) {
     const el = elements.find((el) => el.id == id);
     if (el) data.selected[id] = { ...el };
   }
-  emit("selectBounds", getSelectionBounds(payload, data.selected));
+  const bounds = getSelectionBounds(data.selectIds, data.selected);
+  data.selectBound = bounds;
+  emit("selectBounds", bounds);
 }
 
 /** 更新选择元素的大小 */
@@ -55,8 +59,14 @@ function UPDATE_GUIDES(options: OptionsType<"UPDATE_GUIDES">) {
   emit("guides", payload);
 }
 
+/** 更新碰撞信息 */
+function UPDATE_COLLISION(options: OptionsType<"UPDATE_COLLISION">) {
+  const { payload, emit } = options;
+  emit("collision", payload);
+}
+
 export function handleDispatch<K extends keyof CanvasAction>(options: OptionsType<K>) {
   const { type } = options;
-  const funcs = { UPDATE_ELEMENT, SELECT_ELEMENT_IDS, SELECT_BOX, UPDATE_GUIDES };
+  const funcs = { UPDATE_ELEMENT, SELECT_ELEMENT_IDS, SELECT_BOX, UPDATE_GUIDES, UPDATE_COLLISION };
   funcs[type](options as any);
 }

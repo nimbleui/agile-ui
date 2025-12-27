@@ -6,29 +6,27 @@ export function smartGuidesPlugin(options?: { threshold: number }): Plugin {
   return {
     name: "smartGuidesPlugin",
     before: ({ activeTool }) => activeTool === "drag",
-    move({ selectIds, selected, mouse, dispatch, forEach }, maths) {
+    move({ selectBound, mouse, dispatch, forEach }, maths) {
       const { disX, disY } = mouse;
-      const bounds = maths.getSelectionBounds(selectIds, selected);
-      if (!bounds) return;
+      if (!selectBound) return;
 
-      const minX = bounds.left + disX;
-      const minY = bounds.top + disY;
+      const minX = selectBound.left;
+      const minY = selectBound.top;
       const xPoints = [
         { val: minX, type: "l" },
-        { val: minX + bounds.width / 2, type: "c" },
-        { val: minX + bounds.width, type: "r" },
+        { val: minX + selectBound.width / 2, type: "c" },
+        { val: minX + selectBound.width, type: "r" },
       ];
       const yPoints = [
         { val: minY, type: "t" },
-        { val: minY + bounds.height / 2, type: "c" },
-        { val: minY + bounds.height, type: "b" },
+        { val: minY + selectBound.height / 2, type: "c" },
+        { val: minY + selectBound.height, type: "b" },
       ];
 
       const x = { gap: Infinity, direction: "", position: 0, start: 0, end: 0 };
       const y = { gap: Infinity, direction: "", position: 0, start: 0, end: 0 };
 
-      forEach(({ selected, moveEl }) => {
-        if (selected) return;
+      forEach(({ moveEl }) => {
         const rect = maths.getBoundingBox(moveEl);
         const targetXPoints = [rect.minX, rect.centerX, rect.maxX];
         const targetYPoints = [rect.minY, rect.centerY, rect.maxY];
@@ -43,8 +41,8 @@ export function smartGuidesPlugin(options?: { threshold: number }): Plugin {
                 gap: diff,
                 direction: item.type,
                 position: val,
-                start: Math.min(bounds.left, rect.minX),
-                end: Math.max(bounds.width + bounds.left, rect.maxX),
+                start: Math.min(selectBound.left, rect.minX),
+                end: Math.max(selectBound.width + selectBound.left, rect.maxX),
               });
             }
           }
@@ -60,13 +58,13 @@ export function smartGuidesPlugin(options?: { threshold: number }): Plugin {
                 gap: diff,
                 direction: item.type,
                 position: val,
-                start: Math.min(bounds.top, rect.minY),
-                end: Math.max(bounds.height + bounds.top, rect.maxY),
+                start: Math.min(selectBound.top, rect.minY),
+                end: Math.max(selectBound.height + selectBound.top, rect.maxY),
               });
             }
           }
         }
-      });
+      }, "notSelected");
 
       const xChecked = Math.abs(x.gap) < threshold;
       const yChecked = Math.abs(y.gap) < threshold;
@@ -81,7 +79,7 @@ export function smartGuidesPlugin(options?: { threshold: number }): Plugin {
           if (yChecked) top += y.gap;
 
           data[el.id] = { left, top };
-        }, true);
+        }, "selected");
         dispatch("UPDATE_ELEMENT", data);
       }
 

@@ -39,6 +39,8 @@ export type CanvasAction = {
   SELECT_BOX: RectInfo | null;
   /** 更新辅助线 */
   UPDATE_GUIDES: GuidesList;
+  /** 更新碰撞 */
+  UPDATE_COLLISION: string[];
 };
 
 export interface MouseInfo {
@@ -83,6 +85,8 @@ export interface PluginType {
   elements: ElementType[];
   /** 是否多选 */
   multiSelect: boolean;
+  /** 选中元素信息 */
+  selectBound: RectInfo | null;
 }
 
 export interface MathTypes {
@@ -111,12 +115,12 @@ export interface MathTypes {
   };
 }
 
-export type PluginContext = Omit<PluginType, "elements"> & {
+export type PluginContext = Omit<PluginType, "elements" | "selected"> & {
   /**
    * 循环元素
    * callback 回调函数：
    *  第一个参数：el: 鼠标按下时的元素信息、selected：是否选中、moveEl：鼠标移动时的元素信息
-   *  第二参数：是否只循环选中的元素
+   *  第二参数：循环类型：all：所有  selected：选中  notSelected：没选中
    */
   forEach: (
     callback: (data: {
@@ -127,7 +131,8 @@ export type PluginContext = Omit<PluginType, "elements"> & {
       /** 鼠标移动时的元素信息 */
       moveEl: ElementType;
     }) => void,
-    selected?: boolean,
+    /** 循环类型：all：所有  selected：选中  notSelected：没选中 */
+    type?: "all" | "selected" | "notSelected",
   ) => void;
   /**
    * 更新值
@@ -179,4 +184,6 @@ export type EventTypes = {
   custom: (type: string, data: any) => void;
   /** 辅助线 */
   guides: (data: GuidesList) => void;
+  /** 碰撞检查 */
+  collision: (data: string[]) => void;
 };

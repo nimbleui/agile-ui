@@ -12,7 +12,7 @@ export function dragPlugin(): Plugin {
 
       forEach(({ el }) => {
         data[el.id] = { left: parseInt(`${el.left}`) + disX, top: parseInt(`${el.top}`) + disY };
-      }, true);
+      }, "selected");
 
       dispatch("UPDATE_ELEMENT", data);
     },

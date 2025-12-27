@@ -22,6 +22,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     rect: {} as RectInfo,
     containerRect: {} as RectInfo,
     mouse: {} as MouseInfo,
+    selectBound: null,
   };
 
   function mousedown(e: MouseEvent | TouchEvent) {
@@ -107,11 +108,11 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
   function addElement(el: ElementType | ElementType[]) {
     if (Array.isArray(el)) {
       for (let i = 0; i < el.length; i++) {
-        state.elements.push(el[i]);
+        state.elements.push({ ...el[i] });
       }
       return;
     }
-    state.elements.push(el);
+    state.elements.push({ ...el });
   }
 
   return { addElement, on, off };

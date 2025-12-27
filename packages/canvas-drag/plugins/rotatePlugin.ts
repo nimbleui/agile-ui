@@ -10,13 +10,12 @@ export function rotatePlugin(): Plugin {
   return {
     name: "rotatePlugin",
     before: ({ activeTool }) => activeTool === "rotate",
-    down({ selected, selectIds, containerRect, mouse }, maths) {
+    down({ selectBound, containerRect, mouse }, maths) {
       const { startX, startY } = mouse;
       const { left, top } = containerRect;
 
-      const bounds = maths.getSelectionBounds(selectIds, selected);
-      if (!bounds) return;
-      const center = maths.getCenter(bounds);
+      if (!selectBound) return;
+      const center = maths.getCenter(selectBound);
       downData.centerY = center.top;
       downData.centerX = center.left;
       downData.angle = Math.atan2(startY - (center.top + top), startX - (center.left + left));
@@ -31,7 +30,7 @@ export function rotatePlugin(): Plugin {
       const data: Record<string, Partial<RectInfo>> = {};
       forEach(({ el }) => {
         data[el.id] = { angle: (el.angle || 0) + angleDiff };
-      }, true);
+      }, "selected");
 
       dispatch("UPDATE_ELEMENT", data);
     },
