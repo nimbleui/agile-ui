@@ -48,6 +48,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     context.multiSelect = !!(options.keyCode && e[options.keyCode]);
 
     pluginExecute(options.plugins, "down", context, emit);
+    emit("down", e);
 
     document.addEventListener("mousemove", mousemove);
     document.addEventListener("touchmove", mousemove);
@@ -66,7 +67,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
 
     context.mouse.disX = clientX - context.mouse.startX;
     context.mouse.disY = clientY - context.mouse.startY;
-
+    emit("move", e);
     pluginExecute(options.plugins, "move", context, emit);
   }
 
@@ -83,7 +84,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
 
     document.removeEventListener("mouseup", mouseup);
     document.removeEventListener("touchend", mouseup);
-
+    emit("up", e);
     pluginExecute(options.plugins, "up", context, emit);
   }
 

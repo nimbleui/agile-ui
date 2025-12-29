@@ -192,4 +192,16 @@ export type EventTypes = {
   guides: (data: GuidesList) => void;
   /** 碰撞检查 */
   collision: (data: string[]) => void;
+  /** 鼠标按下 */
+  down: (e: MouseEvent | TouchEvent) => void;
+  /** 鼠标移动 */
+  move: (e: MouseEvent | TouchEvent) => void;
+  /** 鼠标抬起 */
+  up: (e: MouseEvent | TouchEvent) => void;
+  /** 拖拽 */
+  drag: (data: Record<string, { left: number; top: number }>, ids: string[]) => void;
+  /** 放大缩小 */
+  scale: (data: Record<string, { width: number; height: number }>, ids: string[]) => void;
+  /** 旋转 */
+  rotate: (data: Record<string, { angle: number }>, ids: string[]) => void;
 };

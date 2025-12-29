@@ -27,6 +27,9 @@ function UPDATE_ELEMENT(options: OptionsType<"UPDATE_ELEMENT">) {
     elements.map((el) => ({ ...el })),
   );
   emit("selectBounds", getSelectionBounds(data.selectIds, selected));
+
+  const tool = options.data.activeTool;
+  if (tool && tool != "canvas") emit(tool, payload as any, options.data.selectIds);
 }
 
 /** 选择元素ID */
