@@ -28,11 +28,11 @@ function forEachElement(options: PluginType) {
     type?: "all" | "selected" | "notSelected",
   ) => {
     for (let i = 0; i < elements.length; i++) {
-      const moveEl = elements[i];
+      const moveEl = { ...elements[i] };
       // 按下时的元素信息
       const el = selected[moveEl.id];
       if (type == "selected" && el) {
-        callback({ selected: true, el, moveEl });
+        callback({ selected: true, el: { ...el }, moveEl });
       }
 
       if (type == "notSelected" && !el) {
@@ -40,7 +40,7 @@ function forEachElement(options: PluginType) {
       }
 
       if (type == "all" || !type) {
-        callback({ selected: !!el, el, moveEl });
+        callback({ selected: !!el, el: { ...el }, moveEl });
       }
     }
   };
@@ -50,9 +50,9 @@ function forEachElement(options: PluginType) {
  * 执行插件
  * @param plugins
  */
-export function pluginExecute(
+export function pluginExecute<T extends keyof Omit<Plugin, "name" | "enforce">>(
   plugins: Plugin[],
-  type: keyof Omit<Plugin, "name" | "enforce">,
+  type: T,
   options: PluginType,
   emit: <K extends keyof EventTypes>(type: K, ...args: Parameters<EventTypes[K]>) => void,
 ) {
@@ -63,8 +63,9 @@ export function pluginExecute(
     forEach,
     ...other,
     selectIds: [...selectIds],
-    dispatch(type, payload) {
+    dispatch(type, payload, callback) {
       handleDispatch({ type, payload, data: options, elements, emit });
+      callback?.();
     },
   };
 

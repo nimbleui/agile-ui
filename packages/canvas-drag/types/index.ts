@@ -65,6 +65,10 @@ export interface MouseInfo {
   endX: number;
   /** 结束位置Y轴 */
   endY: number;
+  /**滚轮Y轴的值 */
+  deltaY: number;
+  /**滚轮X轴的值 */
+  deltaX: number;
 }
 
 export interface PluginType {
@@ -92,6 +96,8 @@ export interface PluginType {
   multiSelect: boolean;
   /** 鼠标按下时选中元素信息 */
   selectBound: RectInfo | null;
+  /** 缩放比例 */
+  zoom: number;
 }
 export type ActiveTool = PluginType["activeTool"];
 
@@ -104,7 +110,7 @@ export interface MathTypes {
   rotatePoint: (point: Point, center: Point, angleDegrees: number) => Point;
   /** 获取元素的中心点 */
   getCenter: (el: RectInfo) => Point;
-  /** 获取元素的四个角点 */
+  /** 获取元素的四个角点, 顺序：tl tr br bl */
   getCorners: (el: RectInfo) => Point[];
   /** 获取选择的位置信息 */
   getSelectionBounds: (ids: string[], selected: Record<string, RectInfo>) => RectInfo | null;
@@ -146,11 +152,7 @@ export type PluginContext = Omit<PluginType, "elements" | "selected"> & {
    * @param payload 对应 type 的参数
    * @param callback 更新完成在执行的回调
    */
-  dispatch: <K extends keyof CanvasAction>(
-    type: K,
-    payload: CanvasAction[K],
-    callback?: (data: Omit<PluginType, "dispatch">) => void,
-  ) => void;
+  dispatch: <K extends keyof CanvasAction>(type: K, payload: CanvasAction[K], callback?: () => void) => void;
 };
 export interface Plugin {
   /** 插件名称 */
@@ -169,13 +171,13 @@ export interface Plugin {
   keyDown?: (context: PluginContext, maths: MathTypes) => void;
   /** 插件生效的条件 */
   before?: (context: PluginContext) => boolean;
+  /** 滚轮事件 */
+  wheel?: (context: PluginContext, maths: MathTypes) => void;
 }
 
 export interface CanvasDragOptions {
   /** 插件 */
   plugins: Plugin[];
-  /** 元素列表 */
-  elements?: ElementType[];
   /** 多选时，按的是那个键 */
   keyCode?: "shiftKey" | "altKey" | "ctrlKey";
   /** 缩放比例 */
@@ -183,7 +185,9 @@ export interface CanvasDragOptions {
 }
 
 export type EventTypes = {
-  select: (data: RectInfo) => void;
+  /** 选择的元素 */
+  select: (data: string[]) => void;
+  /** 元素发生变化 */
   change: (data: ElementType[]) => void;
   selectBox: (data: RectInfo | null) => void;
   selectBounds: (data: RectInfo | null) => void;

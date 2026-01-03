@@ -49,6 +49,7 @@ function SELECT_ELEMENT_IDS(options: OptionsType<"SELECT_ELEMENT_IDS">) {
     const react = getBoundingBox(bounds);
     data.selectBound = { left: react.minX, top: react.minY, width: react.width, height: react.height };
   }
+  emit("select", payload);
   emit("selectBounds", bounds);
 }
 

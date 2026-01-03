@@ -23,6 +23,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     containerRect: {} as RectInfo,
     mouse: {} as MouseInfo,
     selectBound: null,
+    zoom: options.zoom || 1,
   };
 
   function mousedown(e: MouseEvent | TouchEvent) {
@@ -41,7 +42,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     context.containerRect = react;
 
     // 鼠标位置
-    const { clientX, clientY } = getMouseSite(e, options.zoom);
+    const { clientX, clientY } = getMouseSite(e, context.zoom);
     context.mouse.startX = clientX;
     context.mouse.startY = clientY;
     context.hoveredId = id || null;
@@ -61,7 +62,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     e.preventDefault();
     if (!context.isMove) return;
     // 鼠标位置
-    const { clientX, clientY } = getMouseSite(e, options.zoom);
+    const { clientX, clientY } = getMouseSite(e, context.zoom);
     context.mouse.moveX = clientX;
     context.mouse.moveY = clientY;
 
@@ -75,7 +76,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     e.preventDefault();
     context.isMove = false;
     // 鼠标位置
-    const { clientX, clientY } = getMouseSite(e, options.zoom);
+    const { clientX, clientY } = getMouseSite(e, context.zoom);
 
     context.mouse.endX = clientX - context.mouse.startX;
     context.mouse.endY = clientY - context.mouse.startY;
@@ -88,11 +89,24 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     pluginExecute(options.plugins, "up", context, emit);
   }
 
+  const handleWheel = (e: WheelEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    context.mouse.deltaY = e.deltaY;
+    context.mouse.deltaX = e.deltaX;
+    context.mouse.moveX = e.clientX;
+    context.mouse.moveY = e.clientY;
+    context.mouse.startX = e.clientX;
+    context.mouse.startY = e.clientY;
+    pluginExecute(options.plugins, "wheel", context, emit);
+  };
+
   const observe = new MutationObserver(() => {
     const value = (typeof el == "function" ? el() : el) as HTMLElement | null;
     if (value) {
       value.addEventListener("mousedown", mousedown);
       value.addEventListener("touchstart", mousedown);
+      value.addEventListener("wheel", handleWheel);
 
       state.el = value;
       observe.disconnect();
@@ -110,6 +124,17 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     }
     state.elements.push({ ...el });
   }
+  /** 设置元素 */
+  function setElement(els: ElementType[]) {
+    state.elements = [];
+    for (let i = 0; i < els.length; i++) {
+      state.elements.push({ ...els[i] });
+    }
+  }
 
-  return { addElement, on, off };
+  function setZoom(zoom: number) {
+    context.zoom = zoom;
+  }
+
+  return { addElement, on, off, setZoom, setElement };
 }

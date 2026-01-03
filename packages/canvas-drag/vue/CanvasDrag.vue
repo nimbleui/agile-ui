@@ -3,30 +3,39 @@ import { reactive, ref, StyleValue } from "vue";
 import { canvasDrag } from "../core";
 import { ElementType, GuidesList, GuidesType, RectInfo } from "../types";
 import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin, smartGuidesPlugin, collisionPlugin } from "../plugins";
+import { CanvasDragEmits, CanvasDragProps } from "./types";
 
 defineOptions({ name: "CanvasDrag" });
 const canvasRef = ref<HTMLElement>();
 
-const elements = ref<ElementType[]>([
-  { id: "1", width: 100, height: 100, left: 50, top: 50, angle: 45, style: { backgroundColor: "#ff5555" } },
-  { id: "2", width: 100, height: 100, left: 200, top: 200, style: { backgroundColor: "#5555ff" } },
-  { id: "3", width: 100, height: 100, left: 350, top: 350, style: { backgroundColor: "#55ff55" } },
-  // { id: "4", width: 100, height: 100, left: 500, top: 500, style: { backgroundColor: "#55ff55" } },
-]);
+const props = defineProps<CanvasDragProps>();
+/** 元素列表 */
+const elements = defineModel<ElementType[]>("elements", {
+  default: () => [],
+  required: true,
+});
+/** 选择的元素ids */
+const selectIds = defineModel<string[]>("selectIds");
 
+const emits = defineEmits<CanvasDragEmits>();
+
+/** 放大缩小的八个点 */
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
-const { addElement, on } = canvasDrag(() => canvasRef.value, {
+const { setElement, on } = canvasDrag(() => canvasRef.value, {
   keyCode: "shiftKey",
-  elements: elements.value,
+  zoom: props.zoom,
   plugins: [rotatePlugin(), selectPlugin(), scalePlugin(), dragPlugin(true), smartGuidesPlugin(), collisionPlugin()],
 });
-addElement(elements.value);
+setElement(elements.value);
 
 const data = reactive<{ selectBox: RectInfo | null; selectBounds: RectInfo | null; guides: GuidesList }>({
   selectBox: null,
   selectBounds: null,
   guides: [],
+});
+on("select", (val) => {
+  selectIds.value = val;
 });
 on("change", (list) => {
   elements.value = list;
@@ -39,6 +48,15 @@ on("selectBounds", (res) => {
 });
 on("guides", (res) => {
   data.guides = res;
+});
+on("rotate", (elements, ids) => {
+  emits("rotate", { elements, ids });
+});
+on("scale", (elements, ids) => {
+  emits("scale", { elements, ids });
+});
+on("drag", (elements, ids) => {
+  emits("drag", { elements, ids });
 });
 
 const getSnapLineStyle = (line: GuidesType): StyleValue => {
@@ -62,6 +80,7 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
       :key="item.id"
       :data-element-id="item.id"
       data-drag-handle="drag"
+      class="canvas__drag"
       :style="{
         ...item.style,
         width: `${item.width}px`,
@@ -71,7 +90,7 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
         transform: `rotate(${item.angle || 0}deg)`,
       }"
     >
-      <slot name="item" :item="item"></slot>
+      <slot :id="item.id" name="item" :item="item"></slot>
     </div>
 
     <div
@@ -92,7 +111,11 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
         data-drag-handle="scale"
         :data-drag-type="pos"
         :class="['handle-pos', pos]"
-      ></div>
+      >
+        <slot name="pos">
+          <div class="handle__rect"></div>
+        </slot>
+      </div>
 
       <div class="handle-rotate" data-drag-handle="rotate">
         <div class="handle-rotate-line"></div>
@@ -101,15 +124,18 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
 
     <div
       v-if="data.selectBox"
-      data-drag-handle="group"
-      class="group"
+      class="select-group"
       :style="{
         top: `${data.selectBox.top}px`,
         left: `${data.selectBox.left}px`,
         width: `${data.selectBox.width}px`,
         height: `${data.selectBox.height}px`,
       }"
-    ></div>
+    >
+      <slot name="select" :data="data.selectBox">
+        <div class="select-group__rect"></div>
+      </slot>
+    </div>
 
     <div v-for="item in data.guides" :key="item.type" :style="getSnapLineStyle(item)"></div>
   </div>
@@ -122,7 +148,7 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
   height: 600px;
   background: #ccc;
 
-  div {
+  &__drag {
     position: absolute;
   }
 }
@@ -132,75 +158,85 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
   z-index: 999999999;
   box-sizing: border-box;
 
-  &-pos {
-    position: absolute;
-    width: 8px;
-    height: 8px;
+  &__rect {
+    width: 9px;
+    height: 9px;
     background-color: #fff;
     border: 1px solid #007bff;
     z-index: 10;
     border-radius: 50%;
+    box-sizing: border-box;
+  }
+
+  &-pos {
+    position: absolute;
 
     &.nw {
-      top: -4px;
-      left: -4px;
+      transform: translate(-50%, -50%);
       cursor: nw-resize;
     }
 
     &.n {
-      top: -4px;
+      top: 0;
       left: 50%;
-      margin-left: -4px;
+      transform: translate(-50%, -50%);
       cursor: n-resize;
     }
 
     &.ne {
-      top: -4px;
-      right: -4px;
+      top: 0;
+      right: 0;
+      transform: translate(50%, -50%);
       cursor: ne-resize;
     }
 
     &.e {
       top: 50%;
-      right: -4px;
-      margin-top: -4px;
+      right: 0px;
+      transform: translate(50%, -50%);
       cursor: e-resize;
     }
 
     &.se {
-      bottom: -4px;
-      right: -4px;
+      bottom: 0px;
+      right: 0px;
+      transform: translate(50%, 50%);
       cursor: se-resize;
     }
 
     &.s {
-      bottom: -4px;
+      bottom: 0px;
       left: 50%;
-      margin-left: -4px;
+      transform: translate(-50%, 50%);
       cursor: s-resize;
     }
 
     &.sw {
-      bottom: -4px;
-      left: -4px;
+      bottom: 0px;
+      left: 0px;
+      transform: translate(-50%, 50%);
       cursor: sw-resize;
     }
 
     &.w {
       top: 50%;
-      left: -4px;
-      margin-top: -4px;
+      left: 0px;
+      transform: translate(-50%, -50%);
       cursor: w-resize;
     }
   }
 }
-.group {
+.select-group {
   position: absolute;
-  box-sizing: border-box;
-  background-color: rgba(0, 123, 255, 0.2);
-  border: 1px solid #007bff;
-  pointer-events: none;
-  z-index: 99999;
+  z-index: 9999999;
+  &__rect {
+    box-sizing: border-box;
+    background-color: rgba(0, 123, 255, 0.2);
+    border: 1px solid #007bff;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+  }
 }
 .handle-rotate {
   position: absolute;
