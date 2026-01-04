@@ -3,15 +3,18 @@ import { getMouseSite, getRect } from "./utils";
 import { pluginExecute } from "./handlePlugin";
 import { createBindEvent } from "./events";
 
-export function canvasDrag(el: (() => Element | undefined) | Element | undefined, options: CanvasDragOptions) {
+export function canvasDrag<T extends ElementType>(
+  el: (() => Element | undefined) | Element | undefined,
+  options: CanvasDragOptions,
+) {
   const state = {
     el: null as HTMLElement | null,
-    elements: [] as ElementType[],
+    elements: [] as T[],
   };
 
-  const { on, emit, off } = createBindEvent<EventTypes>();
+  const { on, emit, off } = createBindEvent<EventTypes<T>>();
 
-  const context: PluginType = {
+  const context: PluginType<T> = {
     isMove: false,
     activeTool: null,
     hoveredId: null,
@@ -115,7 +118,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
   observe.observe(document, { childList: true, subtree: true });
 
   /** 添加元素 */
-  function addElement(el: ElementType | ElementType[]) {
+  function addElement(el: T | T[]) {
     if (Array.isArray(el)) {
       for (let i = 0; i < el.length; i++) {
         state.elements.push({ ...el[i] });
@@ -125,7 +128,7 @@ export function canvasDrag(el: (() => Element | undefined) | Element | undefined
     state.elements.push({ ...el });
   }
   /** 设置元素 */
-  function setElement(els: ElementType[]) {
+  function setElement(els: T[]) {
     state.elements = [];
     for (let i = 0; i < els.length; i++) {
       state.elements.push({ ...els[i] });

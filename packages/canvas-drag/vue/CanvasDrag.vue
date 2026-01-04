@@ -1,8 +1,7 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends ElementType">
 import { reactive, ref, StyleValue } from "vue";
 import { canvasDrag } from "../core";
 import { ElementType, GuidesList, GuidesType, RectInfo } from "../types";
-import { dragPlugin, selectPlugin, rotatePlugin, scalePlugin, smartGuidesPlugin, collisionPlugin } from "../plugins";
 import { CanvasDragEmits, CanvasDragProps } from "./types";
 
 defineOptions({ name: "CanvasDrag" });
@@ -10,7 +9,7 @@ const canvasRef = ref<HTMLElement>();
 
 const props = defineProps<CanvasDragProps>();
 /** 元素列表 */
-const elements = defineModel<ElementType[]>("elements", {
+const elements = defineModel<T[]>("elements", {
   default: () => [],
   required: true,
 });
@@ -22,10 +21,10 @@ const emits = defineEmits<CanvasDragEmits>();
 /** 放大缩小的八个点 */
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
-const { setElement, on } = canvasDrag(() => canvasRef.value, {
+const { setElement, on } = canvasDrag<T>(() => canvasRef.value, {
   keyCode: "shiftKey",
   zoom: props.zoom,
-  plugins: [rotatePlugin(), selectPlugin(), scalePlugin(), dragPlugin(true), smartGuidesPlugin(), collisionPlugin()],
+  plugins: props.plugins,
 });
 setElement(elements.value);
 

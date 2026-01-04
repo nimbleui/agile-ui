@@ -27,7 +27,7 @@ const children = computed(() => {
     forEach(item.slots, (value, key) => {
       const slot = props.slots?.[value];
       if (!slot) return;
-      const val = { uuid: `slot-${value}-${key}-${item.uuid}`, slot };
+      const val = { id: `slot-${value}-${key}-${item.id}`, slot };
       if (res[key]) {
         res[key].push(val);
       } else {
@@ -76,7 +76,7 @@ const handleProps = computed(() => {
     v-bind="handleProps.props"
     :is="item.component || item.slot"
     v-if="show"
-    :uuid="item.uuid"
+    :id="item.id"
     v-on="handleProps.on"
   >
     <template v-for="(el, key) in children" :key="key" #[key]>

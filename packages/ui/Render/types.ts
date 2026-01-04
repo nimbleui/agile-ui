@@ -14,7 +14,7 @@ export type ConfigItem<T extends Record<string, any> = any> = {
     /** 放在那个插槽 */
     slotName?: string;
     /** 组件唯一标识 */
-    uuid: string | number;
+    id: string | number;
     /** 组件的props */
     props?: T[K];
     /** 子组件集合 */

@@ -17,26 +17,26 @@ const data = reactive<any>({
 const config = computed<ConfigList>(() => {
   return [
     {
-      uuid: "1",
+      id: "1",
       component: "YField",
       props: { vertical: true, style: "box-shadow: 0 0 0 1px #dcdfe6 inset; border-radius: 4px;" },
       // on: { click: "saveInfo" },
       children: [
         {
-          uuid: "1-1",
+          id: "1-1",
           component: "YText",
           slotName: "label",
           props: { text: props.label },
         },
         {
-          uuid: "2",
+          id: "2",
           component: "YInput",
           props: { type: "text", placeholder: props.placeholder },
           model: { modelValue: "data.value", a: "data.data.a" },
           // on: { change: "inputChange" },
         },
         {
-          uuid: "3",
+          id: "3",
           component: "YClose",
           show: "${!!data.value}",
           on: { click: "clear" },

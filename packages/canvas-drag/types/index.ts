@@ -71,11 +71,11 @@ export interface MouseInfo {
   deltaX: number;
 }
 
-export interface PluginType {
+export interface PluginType<T extends ElementType = ElementType> {
   /** 选中的元素id */
   selectIds: string[];
   /** 选中的元素 */
-  selected: Record<string, ElementType>;
+  selected: Record<string, T>;
   /** 按下的元素 */
   hoveredId: string | null;
   /** 当前操作类型 */
@@ -91,7 +91,7 @@ export interface PluginType {
   /** 是否移动 */
   isMove: boolean;
   /** 元素列表 */
-  elements: ElementType[];
+  elements: T[];
   /** 是否多选 */
   multiSelect: boolean;
   /** 鼠标按下时选中元素信息 */
@@ -184,11 +184,11 @@ export interface CanvasDragOptions {
   zoom?: number;
 }
 
-export type EventTypes = {
+export type EventTypes<T extends ElementType = ElementType> = {
   /** 选择的元素 */
   select: (data: string[]) => void;
   /** 元素发生变化 */
-  change: (data: ElementType[]) => void;
+  change: (data: T[]) => void;
   selectBox: (data: RectInfo | null) => void;
   selectBounds: (data: RectInfo | null) => void;
   custom: (type: string, data: any) => void;

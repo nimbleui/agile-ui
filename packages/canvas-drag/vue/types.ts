@@ -1,7 +1,14 @@
-import { EventTypes } from "../types";
+import { EventTypes, Plugin } from "../types";
 
 export interface CanvasDragProps {
+  /** 画布缩放比例 */
   zoom?: number;
+  /** 画布的宽度 */
+  width?: string | number;
+  /** 画布的高度 */
+  height?: string | number;
+  /** canvasDrag的插件 */
+  plugins: Plugin[];
 }
 
 interface GetParameter<T extends any[]> {
