@@ -33,9 +33,9 @@ export function canvasDrag<T extends ElementType>(
     e.preventDefault();
     context.isMove = true;
     const target = e.target as HTMLElement;
-    const handle = target.dataset.dragHandle;
-    const handleType = target.dataset.dragType;
     const id = target.closest("[data-element-id]")?.getAttribute("data-element-id");
+    const handle = target.closest("[data-drag-handle]")?.getAttribute("data-drag-handle");
+    const handleType = target.closest("[data-drag-type]")?.getAttribute("data-drag-type");
     if (handle) context.activeTool = handle as ActiveTool;
     if (id && !handle) context.activeTool = "drag";
     context.activeToolType = handleType;

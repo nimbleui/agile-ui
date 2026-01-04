@@ -81,7 +81,7 @@ export interface PluginType<T extends ElementType = ElementType> {
   /** 当前操作类型 */
   activeTool: "canvas" | "drag" | "scale" | "rotate" | null;
   /** 当前操作类型值 */
-  activeToolType?: string;
+  activeToolType?: string | null;
   /** 当前元素的位置信息 */
   rect: RectInfo;
   /** 容器元素的位置信息 */

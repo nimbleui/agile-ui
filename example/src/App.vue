@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { ConfigTypes, RenderItem } from "@agile-ui/ui";
 import {
   CanvasDrag,
@@ -36,6 +36,7 @@ const elements = ref<(ElementType & ConfigTypes)[]>([
 const onDrag = () => {
   console.log(222);
 };
+const data = reactive({});
 </script>
 
 <template>
@@ -45,7 +46,7 @@ const onDrag = () => {
     @drag="onDrag"
   >
     <template #item="{ item }">
-      <RenderItem :data="item.data" :item="item" />
+      <RenderItem :data="data" :item="item" />
     </template>
   </CanvasDrag>
 </template>
