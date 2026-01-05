@@ -4,3 +4,4 @@ export * from "./rotatePlugin";
 export * from "./scalePlugin";
 export * from "./smartGuidesPlugin";
 export * from "./collisionPlugin";
+export * from "./scaleCanvasPlugin";

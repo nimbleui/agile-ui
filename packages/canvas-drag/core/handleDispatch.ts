@@ -71,8 +71,17 @@ function UPDATE_COLLISION(options: OptionsType<"UPDATE_COLLISION">) {
   emit("collision", payload);
 }
 
+/** 更新缩放比例 */
+function UPDATE_ZOOM(options: OptionsType<"UPDATE_ZOOM">) {
+  const { payload, emit } = options;
+  options.data.zoom = payload.zoom;
+  options.data.translateX = payload.x;
+  options.data.translateY = payload.y;
+  emit("zoom", payload);
+}
+
 export function handleDispatch<K extends keyof CanvasAction>(options: OptionsType<K>) {
   const { type } = options;
-  const funcs = { UPDATE_ELEMENT, SELECT_ELEMENT_IDS, SELECT_BOX, UPDATE_GUIDES, UPDATE_COLLISION };
+  const funcs = { UPDATE_ELEMENT, SELECT_ELEMENT_IDS, SELECT_BOX, UPDATE_GUIDES, UPDATE_COLLISION, UPDATE_ZOOM };
   funcs[type](options as any);
 }

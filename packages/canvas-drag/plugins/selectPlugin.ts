@@ -23,13 +23,13 @@ export function selectPlugin(): Plugin {
       }
       dispatch("SELECT_ELEMENT_IDS", ids);
     },
-    move({ mouse, activeTool, containerRect, multiSelect, dispatch }) {
+    move({ mouse, activeTool, containerRect, multiSelect, zoom, dispatch }) {
       if (activeTool != "canvas" || multiSelect) return;
       const { left, top } = containerRect;
       const { disX, disY, startX, startY } = mouse;
 
-      const x = startX - left + (disX < 0 ? disX : 0);
-      const y = startY - top + (disY < 0 ? disY : 0);
+      const x = startX - left / zoom + (disX < 0 ? disX : 0);
+      const y = startY - top / zoom + (disY < 0 ? disY : 0);
 
       boxRect = { left: x, top: y, width: Math.abs(disX), height: Math.abs(disY) };
       dispatch("SELECT_BOX", boxRect);

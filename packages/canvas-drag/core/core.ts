@@ -27,6 +27,8 @@ export function canvasDrag<T extends ElementType>(
     mouse: {} as MouseInfo,
     selectBound: null,
     zoom: options.zoom || 1,
+    translateX: 0,
+    translateY: 0,
   };
 
   function mousedown(e: MouseEvent | TouchEvent) {
@@ -95,12 +97,15 @@ export function canvasDrag<T extends ElementType>(
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!e.ctrlKey) return;
     context.mouse.deltaY = e.deltaY;
     context.mouse.deltaX = e.deltaX;
     context.mouse.moveX = e.clientX;
     context.mouse.moveY = e.clientY;
     context.mouse.startX = e.clientX;
     context.mouse.startY = e.clientY;
+    // 获取容器的信息
+    context.containerRect = getRect(state.el);
     pluginExecute(options.plugins, "wheel", context, emit);
   };
 

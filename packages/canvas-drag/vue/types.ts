@@ -1,4 +1,4 @@
-import { EventTypes, Plugin } from "../types";
+import { ElementType, EventTypes, Plugin } from "../types";
 
 export interface CanvasDragProps {
   /** 画布缩放比例 */
@@ -16,8 +16,9 @@ interface GetParameter<T extends any[]> {
   elements: T["0"];
 }
 
-export interface CanvasDragEmits {
+export interface CanvasDragEmits<T extends ElementType> {
   (e: "drag", data: GetParameter<Parameters<EventTypes["drag"]>>): void;
   (e: "scale", data: GetParameter<Parameters<EventTypes["scale"]>>): void;
   (e: "rotate", data: GetParameter<Parameters<EventTypes["rotate"]>>): void;
+  (e: "change", data: T[]): void;
 }

@@ -9,6 +9,7 @@ import {
   scalePlugin,
   selectPlugin,
   smartGuidesPlugin,
+  scaleCanvasPlugin,
   type ElementType,
 } from "@agile-ui/canvas-drag";
 
@@ -36,14 +37,26 @@ const elements = ref<(ElementType & ConfigTypes)[]>([
 const onDrag = () => {
   console.log(222);
 };
+const onChange = () => {
+  console.log(111);
+};
 const data = reactive({});
 </script>
 
 <template>
   <CanvasDrag
     v-model:elements="elements"
-    :plugins="[rotatePlugin(), selectPlugin(), scalePlugin(), dragPlugin(true), smartGuidesPlugin(), collisionPlugin()]"
+    :plugins="[
+      rotatePlugin(),
+      selectPlugin(),
+      scalePlugin(),
+      dragPlugin(true),
+      smartGuidesPlugin(),
+      collisionPlugin(),
+      scaleCanvasPlugin(),
+    ]"
     @drag="onDrag"
+    @change="onChange"
   >
     <template #item="{ item }">
       <RenderItem :data="data" :item="item" />

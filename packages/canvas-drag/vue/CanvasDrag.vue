@@ -16,7 +16,7 @@ const elements = defineModel<T[]>("elements", {
 /** 选择的元素ids */
 const selectIds = defineModel<string[]>("selectIds");
 
-const emits = defineEmits<CanvasDragEmits>();
+const emits = defineEmits<CanvasDragEmits<T>>();
 
 /** 放大缩小的八个点 */
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
@@ -28,10 +28,16 @@ const { setElement, on } = canvasDrag<T>(() => canvasRef.value, {
 });
 setElement(elements.value);
 
-const data = reactive<{ selectBox: RectInfo | null; selectBounds: RectInfo | null; guides: GuidesList }>({
+const data = reactive<{
+  selectBox: RectInfo | null;
+  selectBounds: RectInfo | null;
+  guides: GuidesList;
+  zoom: { zoom: number; x: number; y: number };
+}>({
   selectBox: null,
   selectBounds: null,
   guides: [],
+  zoom: { zoom: 1, x: 0, y: 0 },
 });
 on("select", (val) => {
   selectIds.value = val;
@@ -57,6 +63,9 @@ on("scale", (elements, ids) => {
 on("drag", (elements, ids) => {
   emits("drag", { elements, ids });
 });
+on("zoom", (res) => {
+  data.zoom = res;
+});
 
 const getSnapLineStyle = (line: GuidesType): StyleValue => {
   return {
@@ -73,7 +82,15 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
 </script>
 
 <template>
-  <div ref="canvasRef" data-drag-handle="canvas" class="canvas">
+  <div
+    ref="canvasRef"
+    :style="{
+      transform: `translate(${data.zoom.x}px, ${data.zoom.y}px) scale(${data.zoom.zoom})`,
+      transformOrigin: '0 0',
+    }"
+    data-drag-handle="canvas"
+    class="canvas"
+  >
     <div
       v-for="item in elements"
       :key="item.id"

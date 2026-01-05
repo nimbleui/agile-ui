@@ -46,6 +46,8 @@ export type CanvasAction = {
   UPDATE_GUIDES: GuidesList;
   /** 更新碰撞 */
   UPDATE_COLLISION: string[];
+  /** 更新缩放比例 */
+  UPDATE_ZOOM: { zoom: number; y: number; x: number };
 };
 
 export interface MouseInfo {
@@ -96,8 +98,12 @@ export interface PluginType<T extends ElementType = ElementType> {
   multiSelect: boolean;
   /** 鼠标按下时选中元素信息 */
   selectBound: RectInfo | null;
-  /** 缩放比例 */
+  /** 画布缩放比例 */
   zoom: number;
+  /** 画布缩放比例时偏移X轴量 */
+  translateX: number;
+  /** 画布缩放比例时偏移Y轴量 */
+  translateY: number;
 }
 export type ActiveTool = PluginType["activeTool"];
 
@@ -208,4 +214,6 @@ export type EventTypes<T extends ElementType = ElementType> = {
   scale: (data: Record<string, { width: number; height: number }>, ids: string[]) => void;
   /** 旋转 */
   rotate: (data: Record<string, { angle: number }>, ids: string[]) => void;
+  /** 画布缩放比例 */
+  zoom: (data: { zoom: number; x: number; y: number }) => void;
 };

@@ -1,39 +1,34 @@
-import { Plugin, RectInfo } from "../types";
-
-function getZoomCenter(rect: RectInfo, clientX: number, clientY: number): { x: number; y: number } {
-  const right = rect.left + rect.width;
-  const bottom = rect.top + rect.height;
-  if (clientX >= rect.left && clientX <= right && clientY >= rect.top && clientY <= bottom) {
-    const x = (clientX - rect.left) / rect.width;
-    const y = (clientY - rect.top) / rect.height;
-    return { x, y };
-  }
-
-  return { x: 0.5, y: 0.5 };
-}
+import { Plugin } from "../types";
 
 export function scaleCanvasPlugin(option?: { minScale?: number; maxScale?: number; scaleStep?: number }): Plugin {
   const minScale = option?.minScale || 0.1;
   const maxScale = option?.maxScale || 5;
   const scaleStep = option?.scaleStep || 0.1;
+  const transform = { zoom: 0, x: 0, y: 0 };
 
   return {
     name: "scaleCanvasPlugin",
-    wheel({ mouse, containerRect, zoom }) {
-      const delta = mouse.deltaY > 0 ? -scaleStep : scaleStep;
-      const newScale = Math.max(minScale, Math.min(maxScale, zoom + delta));
+    wheel({ mouse, containerRect, zoom, dispatch }) {
+      const mouseX = mouse.startX;
+      const mouseY = mouse.startY;
+      const { left, top, width, height } = containerRect;
 
-      if (newScale == zoom) return;
-      const mouseX = mouse.moveX - containerRect.left;
-      const mouseY = mouse.moveY - containerRect.top;
-      const { x, y } = getZoomCenter(containerRect, mouse.moveX, mouse.moveY);
+      const isInside = mouseX >= left && mouseX <= left + width && mouseY >= top && mouseY <= height + top;
+      const originX = isInside ? mouseX : left + width / 2;
+      const originY = isInside ? mouseY : top + height / 2;
 
-      const currentMouseX = (mouseX - this.translateX) / zoom;
-      const currentMouseY = (mouseY - this.translateY) / zoom;
+      const delta = -Math.sign(mouse.deltaY) * scaleStep;
+      const newScale = Math.min(Math.max(zoom + delta, minScale), maxScale);
+      if (newScale === zoom) return;
 
-      this.translateX = mouseX - currentMouseX * newScale;
-      this.translateY = mouseY - currentMouseY * newScale;
-      this.scale = newScale;
+      const scaleRatio = newScale / zoom;
+      const newTransform = {
+        zoom: newScale,
+        x: transform.x + (originX - left) * (1 - scaleRatio),
+        y: transform.y + (originY - top) * (1 - scaleRatio),
+      };
+      Object.assign(transform, newTransform);
+      dispatch("UPDATE_ZOOM", newTransform);
     },
   };
 }
