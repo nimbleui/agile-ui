@@ -4,9 +4,10 @@ let boxRect: RectInfo | null;
 /** 选择插件 */
 export function selectPlugin(): Plugin {
   return {
-    name: "sizePlugin",
+    name: "selectPlugin",
     enforce: "pre",
-    down({ hoveredId, selectIds, multiSelect, dispatch, activeTool }) {
+    keyCode: "shift,-1",
+    down({ hoveredId, selectIds, keyCode, dispatch, activeTool }) {
       // 点击画布空白区域，取消选择
       if (activeTool == "canvas") {
         return dispatch("SELECT_ELEMENT_IDS", []);
@@ -16,15 +17,15 @@ export function selectPlugin(): Plugin {
         return dispatch("SELECT_ELEMENT_IDS", selectIds);
       }
       let ids: string[];
-      if (multiSelect) {
+      if (keyCode == "shift") {
         ids = selectIds.includes(hoveredId) ? selectIds.filter((id) => id !== hoveredId) : [...selectIds, hoveredId];
       } else {
         ids = [hoveredId];
       }
       dispatch("SELECT_ELEMENT_IDS", ids);
     },
-    move({ mouse, activeTool, containerRect, multiSelect, zoom, dispatch }) {
-      if (activeTool != "canvas" || multiSelect) return;
+    move({ mouse, activeTool, containerRect, keyCode, zoom, dispatch }) {
+      if (activeTool != "canvas" || keyCode == "shift") return;
       const { left, top } = containerRect;
       const { disX, disY, startX, startY } = mouse;
 

@@ -11,6 +11,7 @@ import {
   smartGuidesPlugin,
   scaleCanvasPlugin,
   type ElementType,
+  dragCanvasPlugin,
 } from "@agile-ui/canvas-drag";
 
 defineOptions({ name: "App" });
@@ -54,6 +55,7 @@ const data = reactive({});
       smartGuidesPlugin(),
       collisionPlugin(),
       scaleCanvasPlugin(),
+      dragCanvasPlugin(),
     ]"
     @drag="onDrag"
     @change="onChange"

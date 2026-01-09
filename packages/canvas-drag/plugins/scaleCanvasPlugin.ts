@@ -4,11 +4,11 @@ export function scaleCanvasPlugin(option?: { minScale?: number; maxScale?: numbe
   const minScale = option?.minScale || 0.1;
   const maxScale = option?.maxScale || 5;
   const scaleStep = option?.scaleStep || 0.1;
-  const transform = { zoom: 0, x: 0, y: 0 };
 
   return {
     name: "scaleCanvasPlugin",
-    wheel({ mouse, containerRect, zoom, dispatch }) {
+    keyCode: "control",
+    wheel({ mouse, containerRect, translateX, translateY, zoom, dispatch }) {
       const mouseX = mouse.startX;
       const mouseY = mouse.startY;
       const { left, top, width, height } = containerRect;
@@ -24,10 +24,9 @@ export function scaleCanvasPlugin(option?: { minScale?: number; maxScale?: numbe
       const scaleRatio = newScale / zoom;
       const newTransform = {
         zoom: newScale,
-        x: transform.x + (originX - left) * (1 - scaleRatio),
-        y: transform.y + (originY - top) * (1 - scaleRatio),
+        x: translateX + (originX - left) * (1 - scaleRatio),
+        y: translateY + (originY - top) * (1 - scaleRatio),
       };
-      Object.assign(transform, newTransform);
       dispatch("UPDATE_ZOOM", newTransform);
     },
   };

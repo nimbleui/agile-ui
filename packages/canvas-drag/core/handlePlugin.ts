@@ -50,7 +50,7 @@ function forEachElement(options: PluginType) {
  * 执行插件
  * @param plugins
  */
-export function pluginExecute<T extends keyof Omit<Plugin, "name" | "enforce">>(
+export function pluginExecute<T extends keyof Omit<Plugin, "name" | "enforce" | "keyCode">>(
   plugins: Plugin[],
   type: T,
   options: PluginType,
@@ -58,10 +58,11 @@ export function pluginExecute<T extends keyof Omit<Plugin, "name" | "enforce">>(
 ) {
   const pluginList = handlePlugin(plugins);
   const forEach = forEachElement(options);
-  const { elements, selectIds, ...other } = options;
+  const { elements, selectIds, keyCode, ...other } = options;
   const pluginContext: PluginContext = {
     forEach,
     ...other,
+    keyCode,
     selectIds: [...selectIds],
     dispatch(type, payload, callback) {
       handleDispatch({ type, payload, data: options, elements, emit });
@@ -75,6 +76,10 @@ export function pluginExecute<T extends keyof Omit<Plugin, "name" | "enforce">>(
       const plugin = item[j];
       const checked = plugin.before?.(pluginContext);
       if (checked === false) continue;
+      const { keyCode: code } = plugin;
+      const check = code ? (keyCode && code.includes(keyCode)) || (!keyCode && code.includes("-1")) : true;
+      if (!check || (keyCode && !code)) continue;
+
       plugin[type]?.(pluginContext, maths);
     }
   }

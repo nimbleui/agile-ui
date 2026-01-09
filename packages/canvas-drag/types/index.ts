@@ -94,8 +94,6 @@ export interface PluginType<T extends ElementType = ElementType> {
   isMove: boolean;
   /** 元素列表 */
   elements: T[];
-  /** 是否多选 */
-  multiSelect: boolean;
   /** 鼠标按下时选中元素信息 */
   selectBound: RectInfo | null;
   /** 画布缩放比例 */
@@ -104,6 +102,8 @@ export interface PluginType<T extends ElementType = ElementType> {
   translateX: number;
   /** 画布缩放比例时偏移Y轴量 */
   translateY: number;
+  /** 按下的键盘key */
+  keyCode: string;
 }
 export type ActiveTool = PluginType["activeTool"];
 
@@ -173,19 +173,17 @@ export interface Plugin {
   move?: (context: PluginContext, maths: MathTypes) => void;
   /** 鼠标抬起时触发 */
   up?: (context: PluginContext, maths: MathTypes) => void;
-  /** 键盘按下时触发 */
-  keyDown?: (context: PluginContext, maths: MathTypes) => void;
   /** 插件生效的条件 */
   before?: (context: PluginContext) => boolean;
   /** 滚轮事件 */
   wheel?: (context: PluginContext, maths: MathTypes) => void;
+  /** 配合按键，值是去key值，空格会转成space其他不变，组合：ctrl+a，多种："ctrl+a,alt" */
+  keyCode?: string;
 }
 
 export interface CanvasDragOptions {
   /** 插件 */
   plugins: Plugin[];
-  /** 多选时，按的是那个键 */
-  keyCode?: "shiftKey" | "altKey" | "ctrlKey";
   /** 缩放比例 */
   zoom?: number;
 }

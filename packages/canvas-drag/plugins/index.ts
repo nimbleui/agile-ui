@@ -5,3 +5,4 @@ export * from "./scalePlugin";
 export * from "./smartGuidesPlugin";
 export * from "./collisionPlugin";
 export * from "./scaleCanvasPlugin";
+export * from "./dragCanvasPlugin";

@@ -22,7 +22,6 @@ const emits = defineEmits<CanvasDragEmits<T>>();
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
 const { setElement, on } = canvasDrag<T>(() => canvasRef.value, {
-  keyCode: "shiftKey",
   zoom: props.zoom,
   plugins: props.plugins,
 });

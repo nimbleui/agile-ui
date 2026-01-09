@@ -2,6 +2,7 @@ import { ActiveTool, CanvasDragOptions, ElementType, EventTypes, MouseInfo, Plug
 import { getMouseSite, getRect } from "./utils";
 import { pluginExecute } from "./handlePlugin";
 import { createBindEvent } from "./events";
+import { keyboard } from "./keyboard";
 
 export function canvasDrag<T extends ElementType>(
   el: (() => Element | undefined) | Element | undefined,
@@ -12,8 +13,6 @@ export function canvasDrag<T extends ElementType>(
     elements: [] as T[],
   };
 
-  const { on, emit, off } = createBindEvent<EventTypes<T>>();
-
   const context: PluginType<T> = {
     isMove: false,
     activeTool: null,
@@ -21,7 +20,6 @@ export function canvasDrag<T extends ElementType>(
     elements: [],
     selected: {},
     selectIds: [],
-    multiSelect: false,
     rect: {} as RectInfo,
     containerRect: {} as RectInfo,
     mouse: {} as MouseInfo,
@@ -29,7 +27,13 @@ export function canvasDrag<T extends ElementType>(
     zoom: options.zoom || 1,
     translateX: 0,
     translateY: 0,
+    keyCode: "",
   };
+
+  const { on, emit, off } = createBindEvent<EventTypes<T>>();
+  const removeKey = keyboard((key) => {
+    context.keyCode = key;
+  });
 
   function mousedown(e: MouseEvent | TouchEvent) {
     e.preventDefault();
@@ -51,7 +55,6 @@ export function canvasDrag<T extends ElementType>(
     context.mouse.startX = clientX;
     context.mouse.startY = clientY;
     context.hoveredId = id || null;
-    context.multiSelect = !!(options.keyCode && e[options.keyCode]);
 
     pluginExecute(options.plugins, "down", context, emit);
     emit("down", e);
@@ -95,15 +98,13 @@ export function canvasDrag<T extends ElementType>(
   }
 
   const handleWheel = (e: WheelEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!e.ctrlKey) return;
     context.mouse.deltaY = e.deltaY;
     context.mouse.deltaX = e.deltaX;
     context.mouse.moveX = e.clientX;
     context.mouse.moveY = e.clientY;
     context.mouse.startX = e.clientX;
     context.mouse.startY = e.clientY;
+    e.preventDefault();
     // 获取容器的信息
     context.containerRect = getRect(state.el);
     pluginExecute(options.plugins, "wheel", context, emit);
@@ -144,5 +145,13 @@ export function canvasDrag<T extends ElementType>(
     context.zoom = zoom;
   }
 
-  return { addElement, on, off, setZoom, setElement };
+  /** 销毁 */
+  function destroy() {
+    removeKey();
+    state.el?.removeEventListener("mousedown", mousedown);
+    state.el?.removeEventListener("touchstart", mousedown);
+    state.el?.removeEventListener("wheel", handleWheel);
+  }
+
+  return { addElement, on, off, setZoom, setElement, destroy };
 }
