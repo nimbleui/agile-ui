@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends ElementType">
-import { reactive, ref, StyleValue } from "vue";
+import { onBeforeUnmount, reactive, ref, StyleValue, watch } from "vue";
 import { canvasDrag } from "../core";
 import { ElementType, GuidesList, GuidesType, RectInfo } from "../types";
 import { CanvasDragEmits, CanvasDragProps } from "./types";
@@ -21,11 +21,17 @@ const emits = defineEmits<CanvasDragEmits<T>>();
 /** 放大缩小的八个点 */
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
-const { setElement, on } = canvasDrag<T>(() => canvasRef.value, {
+const { setElement, on, destroy } = canvasDrag<T>(() => canvasRef.value, {
   zoom: props.zoom,
   plugins: props.plugins,
 });
-setElement(elements.value);
+watch(
+  () => elements.value.length,
+  () => {
+    setElement(elements.value);
+  },
+  { immediate: true },
+);
 
 const data = reactive<{
   selectBox: RectInfo | null;
@@ -42,7 +48,8 @@ on("select", (val) => {
   selectIds.value = val;
 });
 on("change", (list) => {
-  elements.value = list;
+  elements.value.length = 0;
+  elements.value.push(...list);
 });
 on("selectBox", (res) => {
   data.selectBox = res;
@@ -78,6 +85,9 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
     pointerEvents: "none",
   };
 };
+
+// 销毁
+onBeforeUnmount(destroy);
 </script>
 
 <template>
@@ -133,7 +143,9 @@ const getSnapLineStyle = (line: GuidesType): StyleValue => {
       </div>
 
       <div class="handle-rotate" data-drag-handle="rotate">
-        <div class="handle-rotate-line"></div>
+        <slot name="rotate">
+          <div class="handle-rotate-line"></div>
+        </slot>
       </div>
     </div>
 
