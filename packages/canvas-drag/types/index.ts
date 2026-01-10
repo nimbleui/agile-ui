@@ -177,7 +177,7 @@ export interface Plugin {
   before?: (context: PluginContext) => boolean;
   /** 滚轮事件 */
   wheel?: (context: PluginContext, maths: MathTypes) => void;
-  /** 配合按键，值是去key值，空格会转成space其他不变，组合：ctrl+a，多种："ctrl+a,alt" */
+  /** 配合按键，值是去key值，空格会转成space其他不变，-1代表没有按键也执行，组合：ctrl+a，多种："ctrl+a,alt" */
   keyCode?: string;
 }
 

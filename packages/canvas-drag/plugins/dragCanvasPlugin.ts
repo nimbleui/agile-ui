@@ -11,7 +11,7 @@ export function dragCanvasPlugin(): Plugin {
     },
     move({ mouse, zoom, dispatch }) {
       const { disX, disY } = mouse;
-      dispatch("UPDATE_ZOOM", { x: disX + dis.x, y: disY + dis.y, zoom });
+      dispatch("UPDATE_ZOOM", { x: disX * zoom + dis.x, y: disY * zoom + dis.y, zoom });
     },
   };
 }
