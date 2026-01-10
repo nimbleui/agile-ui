@@ -17,6 +17,8 @@ export interface RectInfo extends Point {
 export interface ElementType extends RectInfo {
   /** 元素唯一标识 */
   id: string;
+  /** 是否禁用 */
+  disabled?: boolean;
   [key: string]: any;
 }
 
@@ -186,6 +188,8 @@ export interface CanvasDragOptions {
   plugins: Plugin[];
   /** 缩放比例 */
   zoom?: number;
+  /** 是否禁用画布中那个元素拖拽功能，如果是true禁止所有 */
+  disabled?: boolean | ((el: ElementType) => boolean);
 }
 
 export type EventTypes<T extends ElementType = ElementType> = {

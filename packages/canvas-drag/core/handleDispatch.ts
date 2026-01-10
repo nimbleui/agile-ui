@@ -36,12 +36,15 @@ function UPDATE_ELEMENT(options: OptionsType<"UPDATE_ELEMENT">) {
 function SELECT_ELEMENT_IDS(options: OptionsType<"SELECT_ELEMENT_IDS">) {
   const { data, payload, emit, elements } = options;
 
-  data.selectIds = payload;
+  data.selectIds = [];
   data.selected = {};
   for (let i = 0; i < payload.length; i++) {
     const id = payload[i];
     const el = elements.find((el) => el.id == id);
-    if (el) data.selected[id] = { ...el };
+    if (el && !el.disabled) {
+      data.selectIds.push(id);
+      data.selected[id] = { ...el };
+    }
   }
   const bounds = getSelectionBounds(data.selectIds, data.selected);
   data.selectBound = null;

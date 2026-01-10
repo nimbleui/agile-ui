@@ -2,11 +2,16 @@ import { Plugin, RectInfo } from "../types";
 
 let boxRect: RectInfo | null;
 /** 选择插件 */
-export function selectPlugin(): Plugin {
+export function selectPlugin(options?: {
+  /** 按键值，空格会转成space其他不变，-1代表没有按键也执行，组合：ctrl+a，多种："ctrl+a,alt" */
+  keyCode?: string;
+}): Plugin {
+  const keyCode = options?.keyCode ? `${options.keyCode},-1` : "shift,-1";
+
   return {
     name: "selectPlugin",
     enforce: "pre",
-    keyCode: "shift,-1",
+    keyCode,
     down({ hoveredId, selectIds, keyCode, dispatch, activeTool }) {
       // 点击画布空白区域，取消选择
       if (activeTool == "canvas") {
