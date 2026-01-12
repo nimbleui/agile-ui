@@ -4,6 +4,7 @@ export function keyboard(callback: (key: string, type: "down" | "up") => void) {
     const key = (e.code == "Space" ? "space" : e.key).toLowerCase();
     if (!keys.includes(key)) keys.push(key);
     callback(keys.join("+"), "down");
+    e.preventDefault();
   };
 
   const keyup = (e: KeyboardEvent) => {

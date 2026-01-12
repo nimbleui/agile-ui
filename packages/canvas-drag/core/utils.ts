@@ -20,3 +20,7 @@ export function getRect(el: Element | null) {
     height: rect?.height || 0,
   };
 }
+
+export function getAttrValue(target: HTMLElement, name: string) {
+  return target.closest(`[data-${name}]`)?.getAttribute(`data-${name}`);
+}

@@ -188,8 +188,8 @@ export interface CanvasDragOptions {
   plugins: Plugin[];
   /** 缩放比例 */
   zoom?: number;
-  /** 是否禁用画布中那个元素拖拽功能，如果是true禁止所有 */
-  disabled?: boolean | ((el: ElementType) => boolean);
+  /** 是否禁用画布拖拽功能，如果是true禁止所有 */
+  disabled?: boolean;
 }
 
 export type EventTypes<T extends ElementType = ElementType> = {

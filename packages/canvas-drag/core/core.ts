@@ -1,5 +1,5 @@
 import { ActiveTool, CanvasDragOptions, ElementType, EventTypes, MouseInfo, PluginType, RectInfo } from "../types";
-import { getMouseSite, getRect } from "./utils";
+import { getAttrValue, getMouseSite, getRect } from "./utils";
 import { pluginExecute } from "./handlePlugin";
 import { createBindEvent } from "./events";
 import { keyboard } from "./keyboard";
@@ -32,16 +32,18 @@ export function canvasDrag<T extends ElementType>(
 
   const { on, emit, off } = createBindEvent<EventTypes<T>>();
   const removeKey = keyboard((key) => {
+    if (options.disabled) return;
     context.keyCode = key;
   });
 
   function mousedown(e: MouseEvent | TouchEvent) {
+    if (options.disabled) return;
     e.preventDefault();
     context.isMove = true;
     const target = e.target as HTMLElement;
-    const id = target.closest("[data-element-id]")?.getAttribute("data-element-id");
-    const handle = target.closest("[data-drag-handle]")?.getAttribute("data-drag-handle");
-    const handleType = target.closest("[data-drag-type]")?.getAttribute("data-drag-type");
+    const id = getAttrValue(target, "element-id");
+    const handle = getAttrValue(target, "drag-handle");
+    const handleType = getAttrValue(target, "drag-type");
     if (handle) context.activeTool = handle as ActiveTool;
     if (id && !handle) context.activeTool = "drag";
     context.activeToolType = handleType;
