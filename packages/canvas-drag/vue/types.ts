@@ -21,4 +21,5 @@ export interface CanvasDragEmits<T extends ElementType> {
   (e: "scale", data: GetParameter<Parameters<EventTypes["scale"]>>): void;
   (e: "rotate", data: GetParameter<Parameters<EventTypes["rotate"]>>): void;
   (e: "change", data: T[]): void;
+  (e: "custom", data: { type: string; data: any }): void;
 }

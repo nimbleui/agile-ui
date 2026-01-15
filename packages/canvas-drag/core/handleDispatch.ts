@@ -83,8 +83,22 @@ function UPDATE_ZOOM(options: OptionsType<"UPDATE_ZOOM">) {
   emit("zoom", payload);
 }
 
+/** 自定义事件 */
+function CUSTOM_EVENT(options: OptionsType<"CUSTOM_EVENT">) {
+  const { emit, payload } = options;
+  emit("custom", payload.type, payload.data);
+}
+
 export function handleDispatch<K extends keyof CanvasAction>(options: OptionsType<K>) {
   const { type } = options;
-  const funcs = { UPDATE_ELEMENT, SELECT_ELEMENT_IDS, SELECT_BOX, UPDATE_GUIDES, UPDATE_COLLISION, UPDATE_ZOOM };
+  const funcs = {
+    UPDATE_ELEMENT,
+    SELECT_ELEMENT_IDS,
+    SELECT_BOX,
+    UPDATE_GUIDES,
+    UPDATE_COLLISION,
+    UPDATE_ZOOM,
+    CUSTOM_EVENT,
+  };
   funcs[type](options as any);
 }

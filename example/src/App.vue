@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 import { ConfigTypes, RenderItem } from "@agile-ui/ui";
 import {
   CanvasDrag,
@@ -10,8 +10,9 @@ import {
   selectPlugin,
   smartGuidesPlugin,
   scaleCanvasPlugin,
-  type ElementType,
   dragCanvasPlugin,
+  type ElementType,
+  type Plugin,
 } from "@agile-ui/canvas-drag";
 
 defineOptions({ name: "App" });
@@ -48,31 +49,22 @@ setTimeout(() => {
     style: { backgroundColor: "#ffaa00" },
   });
 }, 5000);
-const onDrag = () => {
-  console.log(222);
-};
-const onChange = () => {
-  console.log(111);
-};
+
 const data = reactive({});
+const plugins: Plugin[] = [
+  rotatePlugin(),
+  selectPlugin(),
+  scalePlugin(),
+  dragPlugin(true),
+  smartGuidesPlugin(),
+  collisionPlugin(),
+  scaleCanvasPlugin(),
+  dragCanvasPlugin(),
+];
 </script>
 
 <template>
-  <CanvasDrag
-    v-model:elements="elements"
-    :plugins="[
-      rotatePlugin(),
-      selectPlugin(),
-      scalePlugin(),
-      dragPlugin(true),
-      smartGuidesPlugin(),
-      collisionPlugin(),
-      scaleCanvasPlugin(),
-      dragCanvasPlugin(),
-    ]"
-    @drag="onDrag"
-    @change="onChange"
-  >
+  <CanvasDrag v-model:elements="elements" :plugins="plugins">
     <template #item="{ item }">
       <RenderItem :data="data" :item="item" />
     </template>

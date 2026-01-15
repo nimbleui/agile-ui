@@ -21,7 +21,7 @@ export function canvasDrag<T extends ElementType>(
     selected: {},
     selectIds: [],
     rect: {} as RectInfo,
-    containerRect: {} as RectInfo,
+    containerRect: {} as RectInfo & { el: HTMLElement },
     mouse: {} as MouseInfo,
     selectBound: null,
     zoom: options.zoom || 1,
@@ -31,9 +31,11 @@ export function canvasDrag<T extends ElementType>(
   };
 
   const { on, emit, off } = createBindEvent<EventTypes<T>>();
-  const removeKey = keyboard((key) => {
-    if (options.disabled) return;
-    context.keyCode = key;
+  const removeKey = keyboard((key, type) => {
+    if (options.disabled || (context.keyCode == key && type == "down")) return;
+    if (type == "down") context.keyCode = key;
+    pluginExecute(options.plugins, type == "down" ? "keyDown" : "keyUp", context, emit);
+    if (type == "up") context.keyCode = "";
   });
 
   function mousedown(e: MouseEvent | TouchEvent) {
@@ -58,8 +60,8 @@ export function canvasDrag<T extends ElementType>(
     context.mouse.startY = clientY;
     context.hoveredId = id || null;
 
-    pluginExecute(options.plugins, "down", context, emit);
     emit("down", e);
+    pluginExecute(options.plugins, "down", context, emit);
 
     document.addEventListener("mousemove", mousemove);
     document.addEventListener("touchmove", mousemove);
@@ -129,18 +131,15 @@ export function canvasDrag<T extends ElementType>(
   function addElement(el: T | T[]) {
     if (Array.isArray(el)) {
       for (let i = 0; i < el.length; i++) {
-        state.elements.push({ ...el[i] });
+        state.elements.push(el[i]);
       }
       return;
     }
-    state.elements.push({ ...el });
+    state.elements.push(el);
   }
   /** 设置元素 */
   function setElement(els: T[]) {
-    state.elements = [];
-    for (let i = 0; i < els.length; i++) {
-      state.elements.push({ ...els[i] });
-    }
+    state.elements = els;
   }
 
   function setZoom(zoom: number) {

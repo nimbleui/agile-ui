@@ -5,6 +5,10 @@ export function dragCanvasPlugin(): Plugin {
   return {
     name: "dragCanvasPlugin",
     keyCode: "space",
+    cursor(type, el) {
+      const cursor = type == "keyDown" ? "grab" : type == "keyUp" ? "default" : "grabbing";
+      el.style.setProperty("cursor", cursor, "important");
+    },
     down({ translateX, translateY }) {
       dis.x = translateX;
       dis.y = translateY;

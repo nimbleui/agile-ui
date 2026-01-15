@@ -50,6 +50,8 @@ export type CanvasAction = {
   UPDATE_COLLISION: string[];
   /** 更新缩放比例 */
   UPDATE_ZOOM: { zoom: number; y: number; x: number };
+  /** 自定义事件 */
+  CUSTOM_EVENT: { type: string; data: any };
 };
 
 export interface MouseInfo {
@@ -89,7 +91,7 @@ export interface PluginType<T extends ElementType = ElementType> {
   /** 当前元素的位置信息 */
   rect: RectInfo;
   /** 容器元素的位置信息 */
-  containerRect: RectInfo;
+  containerRect: RectInfo & { el: HTMLElement };
   /** 鼠标信息 */
   mouse: MouseInfo;
   /** 是否移动 */
@@ -181,7 +183,15 @@ export interface Plugin {
   wheel?: (context: PluginContext, maths: MathTypes) => void;
   /** 配合按键，值是去key值，空格会转成space其他不变，-1代表没有按键也执行，组合：ctrl+a，多种："ctrl+a,alt" */
   keyCode?: string;
+  /** 键按下 */
+  keyDown?: (context: PluginContext, maths: MathTypes) => void;
+  /** 键抬起 */
+  keyUp?: (context: PluginContext, maths: MathTypes) => void;
+  /** 设置鼠标样式 */
+  cursor?: (type: PluginFunKey, el: HTMLElement) => void;
 }
+
+export type PluginFunKey = keyof Omit<Plugin, "name" | "enforce" | "keyCode" | "cursor">;
 
 export interface CanvasDragOptions {
   /** 插件 */
@@ -199,6 +209,7 @@ export type EventTypes<T extends ElementType = ElementType> = {
   change: (data: T[]) => void;
   selectBox: (data: RectInfo | null) => void;
   selectBounds: (data: RectInfo | null) => void;
+  /** 自定义事件 */
   custom: (type: string, data: any) => void;
   /** 辅助线 */
   guides: (data: GuidesList) => void;

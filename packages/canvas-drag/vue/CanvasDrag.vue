@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends ElementType">
-import { onBeforeUnmount, reactive, ref, StyleValue, watch } from "vue";
+import { onBeforeUnmount, reactive, ref, StyleValue } from "vue";
 import { canvasDrag } from "../core";
 import { ElementType, GuidesList, GuidesType, RectInfo } from "../types";
 import { CanvasDragEmits, CanvasDragProps } from "./types";
@@ -25,31 +25,19 @@ const { setElement, on, destroy } = canvasDrag<T>(() => canvasRef.value, {
   zoom: props.zoom,
   plugins: props.plugins,
 });
-watch(
-  () => elements.value.length,
-  () => {
-    setElement(elements.value);
-  },
-  { immediate: true },
-);
+setElement(elements.value);
 
-const data = reactive<{
-  selectBox: RectInfo | null;
-  selectBounds: RectInfo | null;
-  guides: GuidesList;
-  zoom: { zoom: number; x: number; y: number };
-}>({
-  selectBox: null,
-  selectBounds: null,
-  guides: [],
-  zoom: { zoom: 1, x: 0, y: 0 },
+const data = reactive({
+  selectBox: null as RectInfo | null,
+  selectBounds: null as RectInfo | null,
+  guides: [] as GuidesList,
+  zoom: { zoom: 1, x: 0, y: 0 } as { zoom: number; x: number; y: number },
 });
 on("select", (val) => {
   selectIds.value = val;
 });
 on("change", (list) => {
-  elements.value.length = 0;
-  elements.value.push(...list);
+  elements.value = list;
 });
 on("selectBox", (res) => {
   data.selectBox = res;
@@ -71,6 +59,9 @@ on("drag", (elements, ids) => {
 });
 on("zoom", (res) => {
   data.zoom = res;
+});
+on("custom", (type, data) => {
+  emits("custom", { type, data });
 });
 
 const getSnapLineStyle = (line: GuidesType): StyleValue => {
@@ -177,6 +168,7 @@ onBeforeUnmount(destroy);
 
   &__drag {
     position: absolute;
+    cursor: move;
   }
 }
 .handle {
@@ -184,6 +176,7 @@ onBeforeUnmount(destroy);
   border: 1px solid #007bff;
   z-index: 999999999;
   box-sizing: border-box;
+  cursor: move;
 
   &__rect {
     width: 9px;

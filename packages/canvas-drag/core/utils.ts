@@ -18,6 +18,7 @@ export function getRect(el: Element | null) {
     left: rect?.left || 0,
     width: rect?.width || 0,
     height: rect?.height || 0,
+    el: el as HTMLElement,
   };
 }
 

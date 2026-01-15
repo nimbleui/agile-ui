@@ -1,4 +1,4 @@
-import type { ElementType, EventTypes, Plugin, PluginContext, PluginType } from "../types";
+import type { ElementType, EventTypes, Plugin, PluginContext, PluginFunKey, PluginType } from "../types";
 import maths from "./math";
 import { handleDispatch } from "./handleDispatch";
 
@@ -50,7 +50,7 @@ function forEachElement(options: PluginType) {
  * 执行插件
  * @param plugins
  */
-export function pluginExecute<T extends keyof Omit<Plugin, "name" | "enforce" | "keyCode">>(
+export function pluginExecute<T extends PluginFunKey>(
   plugins: Plugin[],
   type: T,
   options: PluginType,
@@ -81,6 +81,7 @@ export function pluginExecute<T extends keyof Omit<Plugin, "name" | "enforce" | 
       if (!check || (keyCode && !code)) continue;
 
       plugin[type]?.(pluginContext, maths);
+      plugin.cursor?.(type, options.containerRect.el);
     }
   }
 }
