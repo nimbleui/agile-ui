@@ -24,6 +24,7 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 const { setElement, on, destroy } = canvasDrag<T>(() => canvasRef.value, {
   zoom: props.zoom,
   plugins: props.plugins,
+  disabled: props.disabled,
 });
 setElement(elements.value);
 
@@ -165,10 +166,11 @@ onBeforeUnmount(destroy);
   width: 700px;
   height: 600px;
   background: #ccc;
+  cursor: var(--d-canvas-cursor, default);
 
   &__drag {
     position: absolute;
-    cursor: move;
+    cursor: var(--d-canvas-cursor, move);
   }
 }
 .handle {
@@ -176,7 +178,7 @@ onBeforeUnmount(destroy);
   border: 1px solid #007bff;
   z-index: 999999999;
   box-sizing: border-box;
-  cursor: move;
+  cursor: var(--d-canvas-cursor, move);
 
   &__rect {
     width: 9px;

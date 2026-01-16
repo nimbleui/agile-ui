@@ -9,6 +9,8 @@ export interface CanvasDragProps {
   height?: string | number;
   /** canvasDrag的插件 */
   plugins: Plugin[];
+  /** 是否禁用画布拖拽功能，如果是true禁止所有 */
+  disabled?: boolean;
 }
 
 interface GetParameter<T extends any[]> {

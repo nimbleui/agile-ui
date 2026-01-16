@@ -55,6 +55,7 @@ export function pluginExecute<T extends PluginFunKey>(
   type: T,
   options: PluginType,
   emit: <K extends keyof EventTypes>(type: K, ...args: Parameters<EventTypes[K]>) => void,
+  el: HTMLElement,
 ) {
   const pluginList = handlePlugin(plugins);
   const forEach = forEachElement(options);
@@ -81,7 +82,10 @@ export function pluginExecute<T extends PluginFunKey>(
       if (!check || (keyCode && !code)) continue;
 
       plugin[type]?.(pluginContext, maths);
-      plugin.cursor?.(type, options.containerRect.el);
+      if (plugin.cursor) {
+        const cursor = plugin.cursor(type);
+        el.style.setProperty("--d-canvas-cursor", cursor);
+      }
     }
   }
 }

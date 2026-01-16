@@ -21,7 +21,7 @@ export function canvasDrag<T extends ElementType>(
     selected: {},
     selectIds: [],
     rect: {} as RectInfo,
-    containerRect: {} as RectInfo & { el: HTMLElement },
+    containerRect: {} as RectInfo,
     mouse: {} as MouseInfo,
     selectBound: null,
     zoom: options.zoom || 1,
@@ -34,7 +34,7 @@ export function canvasDrag<T extends ElementType>(
   const removeKey = keyboard((key, type) => {
     if (options.disabled || (context.keyCode == key && type == "down")) return;
     if (type == "down") context.keyCode = key;
-    pluginExecute(options.plugins, type == "down" ? "keyDown" : "keyUp", context, emit);
+    pluginExecute(options.plugins, type == "down" ? "keyDown" : "keyUp", context, emit, state.el!);
     if (type == "up") context.keyCode = "";
   });
 
@@ -61,7 +61,7 @@ export function canvasDrag<T extends ElementType>(
     context.hoveredId = id || null;
 
     emit("down", e);
-    pluginExecute(options.plugins, "down", context, emit);
+    pluginExecute(options.plugins, "down", context, emit, state.el!);
 
     document.addEventListener("mousemove", mousemove);
     document.addEventListener("touchmove", mousemove);
@@ -81,7 +81,7 @@ export function canvasDrag<T extends ElementType>(
     context.mouse.disX = clientX - context.mouse.startX;
     context.mouse.disY = clientY - context.mouse.startY;
     emit("move", e);
-    pluginExecute(options.plugins, "move", context, emit);
+    pluginExecute(options.plugins, "move", context, emit, state.el!);
   }
 
   function mouseup(e: MouseEvent | TouchEvent) {
@@ -98,7 +98,7 @@ export function canvasDrag<T extends ElementType>(
     document.removeEventListener("mouseup", mouseup);
     document.removeEventListener("touchend", mouseup);
     emit("up", e);
-    pluginExecute(options.plugins, "up", context, emit);
+    pluginExecute(options.plugins, "up", context, emit, state.el!);
   }
 
   const handleWheel = (e: WheelEvent) => {
@@ -111,7 +111,7 @@ export function canvasDrag<T extends ElementType>(
     e.preventDefault();
     // 获取容器的信息
     context.containerRect = getRect(state.el);
-    pluginExecute(options.plugins, "wheel", context, emit);
+    pluginExecute(options.plugins, "wheel", context, emit, state.el!);
   };
 
   const observe = new MutationObserver(() => {

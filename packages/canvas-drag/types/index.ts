@@ -91,7 +91,7 @@ export interface PluginType<T extends ElementType = ElementType> {
   /** 当前元素的位置信息 */
   rect: RectInfo;
   /** 容器元素的位置信息 */
-  containerRect: RectInfo & { el: HTMLElement };
+  containerRect: RectInfo;
   /** 鼠标信息 */
   mouse: MouseInfo;
   /** 是否移动 */
@@ -187,8 +187,8 @@ export interface Plugin {
   keyDown?: (context: PluginContext, maths: MathTypes) => void;
   /** 键抬起 */
   keyUp?: (context: PluginContext, maths: MathTypes) => void;
-  /** 设置鼠标样式 */
-  cursor?: (type: PluginFunKey, el: HTMLElement) => void;
+  /** 设置鼠标样式, 返回的值会再画布元素中设置css变量 --d-canvas-cursor 中 */
+  cursor?: (type: PluginFunKey) => string;
 }
 
 export type PluginFunKey = keyof Omit<Plugin, "name" | "enforce" | "keyCode" | "cursor">;
