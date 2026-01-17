@@ -23,5 +23,5 @@ export function getRect(el: Element | null) {
 }
 
 export function getAttrValue(target: HTMLElement, name: string) {
-  return target.closest(`[data-${name}]`)?.getAttribute(`data-${name}`);
+  return target.closest(`[data-${name}]`)?.getAttribute(`data-${name}`) || null;
 }

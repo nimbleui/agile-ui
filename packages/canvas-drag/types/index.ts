@@ -108,6 +108,8 @@ export interface PluginType<T extends ElementType = ElementType> {
   translateY: number;
   /** 按下的键盘key */
   keyCode: string;
+  /** 悬停的元素id */
+  hoverId: string | null;
 }
 export type ActiveTool = PluginType["activeTool"];
 
@@ -189,6 +191,10 @@ export interface Plugin {
   keyUp?: (context: PluginContext, maths: MathTypes) => void;
   /** 设置鼠标样式, 返回的值会再画布元素中设置css变量 --d-canvas-cursor 中 */
   cursor?: (type: PluginFunKey) => string;
+  /** 鼠标悬停在可拖拽的元素上触发 */
+  hover?: (context: PluginContext, maths: MathTypes) => void;
+  /** 鼠标移出可拖拽的元素上触发 */
+  outHover?: (context: PluginContext, maths: MathTypes) => void;
 }
 
 export type PluginFunKey = keyof Omit<Plugin, "name" | "enforce" | "keyCode" | "cursor">;

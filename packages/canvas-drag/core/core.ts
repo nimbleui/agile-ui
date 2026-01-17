@@ -28,6 +28,7 @@ export function canvasDrag<T extends ElementType>(
     translateX: 0,
     translateY: 0,
     keyCode: "",
+    hoverId: null,
   };
 
   const { on, emit, off } = createBindEvent<EventTypes<T>>();
@@ -87,6 +88,7 @@ export function canvasDrag<T extends ElementType>(
   function mouseup(e: MouseEvent | TouchEvent) {
     e.preventDefault();
     context.isMove = false;
+    context.hoverId = null;
     // 鼠标位置
     const { clientX, clientY } = getMouseSite(e, context.zoom);
 
@@ -114,12 +116,26 @@ export function canvasDrag<T extends ElementType>(
     pluginExecute(options.plugins, "wheel", context, emit, state.el!);
   };
 
+  const handleHover = (e: MouseEvent | TouchEvent) => {
+    const target = e.target as HTMLElement;
+    const id = getAttrValue(target, "element-id");
+    const { hoverId, isMove, zoom } = context;
+    if (options.disabled || hoverId == id || isMove || (!id && !hoverId)) return;
+    const { clientX, clientY } = getMouseSite(e, zoom);
+    context.mouse.moveX = clientX;
+    context.mouse.moveY = clientY;
+    context.hoverId = id;
+    pluginExecute(options.plugins, !id && hoverId ? "outHover" : "hover", context, emit, state.el!);
+  };
+
   const observe = new MutationObserver(() => {
     const value = (typeof el == "function" ? el() : el) as HTMLElement | null;
     if (value) {
       value.addEventListener("mousedown", mousedown);
       value.addEventListener("touchstart", mousedown);
       value.addEventListener("wheel", handleWheel);
+      value.addEventListener("mousemove", handleHover);
+      value.addEventListener("touchmove", handleHover);
 
       state.el = value;
       observe.disconnect();
@@ -152,6 +168,8 @@ export function canvasDrag<T extends ElementType>(
     state.el?.removeEventListener("mousedown", mousedown);
     state.el?.removeEventListener("touchstart", mousedown);
     state.el?.removeEventListener("wheel", handleWheel);
+    state.el?.removeEventListener("mousemove", handleHover);
+    state.el?.removeEventListener("touchmove", handleHover);
   }
 
   return { addElement, on, off, setZoom, setElement, destroy };
