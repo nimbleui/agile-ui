@@ -1,5 +1,5 @@
-import VirtualList from "./VirtualList.vue";
+import YVirtualList from "./VirtualList.vue";
 
 export * from "./types";
-export { VirtualList };
-export default VirtualList;
+export { YVirtualList };
+export default YVirtualList;

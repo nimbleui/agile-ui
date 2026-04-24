@@ -42,6 +42,7 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "off",
       "vue/multi-word-component-names": "off", // 可选：关闭 Vue 组件名检查
       "vue/require-default-prop": "off",
+      "no-case-declarations": "off",
     },
   },
   prettierRecommended, // 必须放在最后

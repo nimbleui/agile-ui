@@ -1,5 +1,5 @@
-import TreeVirtual from "./TreeVirtual.vue";
+import YTreeVirtual from "./TreeVirtual.vue";
 
 export * from "./types";
-export { TreeVirtual };
-export default TreeVirtual;
+export { YTreeVirtual };
+export default YTreeVirtual;

@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import Primitive from "../Primitive";
 import { TextProps } from "./types";
 
 defineOptions({ name: "YText" });
 
-const props = defineProps<TextProps>();
-console.log(props.text);
+withDefaults(defineProps<TextProps>(), {
+  as: "span",
+});
 </script>
 
 <template>
-  <component :is="target || 'span'">
+  <primitive :as="as" :as-child="asChild">
     <slot>{{ text }}</slot>
-  </component>
+  </primitive>
 </template>

@@ -1,6 +1,6 @@
-import Scrollbar from "./Scrollbar.vue";
+import YScrollbar from "./Scrollbar.vue";
 
 export * from "./types";
 
-export { Scrollbar };
-export default Scrollbar;
+export { YScrollbar };
+export default YScrollbar;

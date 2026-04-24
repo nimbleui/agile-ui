@@ -1,8 +1,10 @@
-import { CommonTypes } from "../common";
+import type { CommonTypes } from "../common";
+import type { PrimitiveProps } from "../Primitive";
 
-export interface TextProps extends CommonTypes {
+export type TextProps = {
   /** 渲染的元素 */
   target?: string;
   /** 文本 */
   text?: string;
-}
+} & CommonTypes &
+  PrimitiveProps;

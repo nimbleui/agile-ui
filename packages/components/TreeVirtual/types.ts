@@ -11,7 +11,7 @@ export type TreeVirtualNode<T> = T & {
   parentId: string | number | null;
 };
 
-export interface TreeVirtualProps<T> {
+export interface TreeVirtualProps<T = Record<string, any>> {
   /** 数据源 */
   data: T[];
   /** 唯一标识的Key */

@@ -17,36 +17,36 @@ const template = {
 const config = computed<ConfigList>(() => {
   return [
     {
-      uuid: "2",
+      id: "2",
       component: "YMask",
     },
     {
-      uuid: "3",
+      id: "3",
       component: "YContainer",
       props: { vertical: true, justify: "center", position: "relative" },
       show: "${data.show}",
       showType: "if",
       children: [
         {
-          uuid: "4",
+          id: "4",
           component: "YContainer",
           props: { align: "center", justify: "center", position: "relative" },
           children: [
             {
-              uuid: "5",
+              id: "5",
               component: "YText",
               slots: { default: "title" },
               props: { target: "span", text: attrs.title as string },
             },
             {
-              uuid: "6",
+              id: "6",
               component: "YClose",
               props: { position: "absolute" },
             },
           ],
         },
         {
-          uuid: "7",
+          id: "7",
           component: "YContainer",
           slots: { default: "default" },
           props: { display: "block" },

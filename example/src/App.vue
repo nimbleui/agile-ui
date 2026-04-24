@@ -14,6 +14,7 @@ import {
   type ElementType,
   type Plugin,
 } from "@agile-ui/canvas-drag";
+import { createExpressionEngine, Types } from "@agile-ui/expr-engine";
 
 defineOptions({ name: "App" });
 // const a = ref("222");
@@ -61,6 +62,38 @@ const plugins: Plugin[] = [
   scaleCanvasPlugin(),
   dragCanvasPlugin(),
 ];
+
+// const lexer = new Lexer();
+// console.log(lexer.tokenize("11 + 12 > 16 && aa"));
+// console.log(lexer.tokenize("(11 + 12) * 16 > 88 && cc"));
+// console.log(lexer.tokenize(`arr[1] && obj.aa && obj.cc > 16`));
+// console.log(lexer.tokenize("sun(11, 22) or"));
+// console.log(
+//   lexer.tokenize(`
+// "dfadasdafaddfasdfasdf"
+// `),
+// );
+// const parser = new Parser();
+// console.log(parser.parse("11 + 12 > 16 && aa"));
+// console.log(parser.parse("sun(11, 22, 33)"));
+// console.log(parser.parse("(11 + 12) * 16 + 12"));
+// console.log(parser.parse("!(value && data.a)"));
+const run = async () => {
+  const engine = createExpressionEngine();
+  const ctx = engine.createContext({ a: 11, b: 2 });
+  engine.registry.register({
+    name: "add",
+    signature: { paramTypes: [Types.number, Types.number], returnType: Types.number },
+    execute: (args) => {
+      const a = args[0] as number;
+      const b = args[1] as number;
+      return a + b;
+    },
+  });
+  console.log(await engine.compiler.execute("2222", ctx));
+  console.log(await engine.compiler.execute("add(a, b) * 3", ctx));
+};
+run();
 </script>
 
 <template>

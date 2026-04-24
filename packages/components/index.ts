@@ -10,9 +10,23 @@ import { YContainer, type ContainerProps } from "./Container";
 import { YCollectRoot, type CollectRootProps } from "./CollectRoot";
 import { YInput, type InputProps } from "./Input";
 import { YField, type FieldProps } from "./Field";
+import { YScrollbar, type ScrollbarProps } from "./Scrollbar";
+import { YVirtualList, type VirtualListProps } from "./VirtualList";
+import { YTreeVirtual, type TreeVirtualProps } from "./TreeVirtual";
 import { CommonTypes } from "./common";
 
-export const components = { YText, YClose, YCollectRoot, YMask, YContainer, YInput, YField };
+export const components = {
+  YText,
+  YClose,
+  YCollectRoot,
+  YMask,
+  YContainer,
+  YInput,
+  YField,
+  YScrollbar,
+  YVirtualList,
+  YTreeVirtual,
+};
 export interface ComponentProps<K extends keyof CommonTypes = never> {
   /** 文本组件 */
   YText: Omit<TextProps, K>;
@@ -28,4 +42,10 @@ export interface ComponentProps<K extends keyof CommonTypes = never> {
   YInput: Omit<InputProps, K>;
   /** field组件 */
   YField: Omit<FieldProps, K>;
+  /** 虚拟列表组件 */
+  YVirtualList: Omit<VirtualListProps, K>;
+  /** 虚拟树形组件 */
+  YTreeVirtual: Omit<TreeVirtualProps, K>;
+  /** 滚动条组件 */
+  YScrollbar: Omit<ScrollbarProps, K>;
 }

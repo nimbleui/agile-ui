@@ -42,6 +42,8 @@ export function objectEach<T extends Record<string | number, any>>(obj: T, itera
 export function forEach<T>(obj: T[], iteratee: iterateeArray<T>): T[];
 export function forEach<T>(obj: T, iteratee: iterateeObject<T>): T;
 export function forEach(obj: any, iteratee: any) {
+  if (obj == null) return;
+
   if (isArray(obj)) {
     return arrayEach(obj, iteratee);
   } else if (isPlainObject(obj)) {

@@ -1,4 +1,6 @@
-export interface VirtualListProps<T> {
+import { CommonTypes } from "../common";
+
+export interface VirtualListProps<T = Record<string, any>> extends CommonTypes {
   /** 列表 */
   items: T[];
   /** 缓冲区，避免滚动时闪烁 默认 5 */

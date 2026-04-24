@@ -28,7 +28,7 @@ export type ConfigItem<T extends Record<string, any> = any> = {
   } & (
     | {
         /** 组件名 */
-        component: K;
+        component: K | string;
         slot?: never;
       }
     | {

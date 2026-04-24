@@ -101,7 +101,11 @@ const containerResize: ResizeEvent = ({ el, height }) => {
   containerHeight.value = height;
 };
 
-function scrollToPosition(left: number | undefined, top: number | undefined, behavior: ScrollToOptions["behavior"]) {
+function scrollToPosition(
+  left: number | undefined,
+  top: number | undefined,
+  behavior: VirtualScrollToOptions["behavior"],
+) {
   containerRef.value?.scrollTo({ left, top, behavior });
 }
 
