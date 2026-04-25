@@ -1,6 +1,5 @@
 import { ExecutionContext } from "../runtime/ExecutionContext";
 import { Interpreter } from "../runtime/Interpreter";
-import { Parser } from "../parser/Parser";
 import { SyntaxFilter } from "./SyntaxFilter";
 import { TypeChecker, TypeContext } from "../type-system/TypeChecker";
 import { FunctionRegistry } from "../runtime/FunctionRegistry";
@@ -24,13 +23,22 @@ export class Sandbox {
   private typeChecker: TypeChecker;
   private functionRegistry: FunctionRegistry;
   private options: Required<SandboxOptions>;
-  private parser: Parser; // 保留以兼容旧的 execute(source) 方法
 
   constructor(functionRegistry: FunctionRegistry, options: SandboxOptions = {}) {
-    this.syntaxFilter = new SyntaxFilter(options.allowedFunctions ?? Array.from(functionRegistry["functions"].keys()));
-    this.typeChecker = new TypeChecker();
     this.functionRegistry = functionRegistry;
-    this.parser = new Parser(); // 仅用于兼容旧接口
+
+    // 确定函数允许检查器
+    let allowChecker: (name: string) => boolean;
+    if (options.allowedFunctions) {
+      const set = new Set(options.allowedFunctions);
+      allowChecker = (name) => set.has(name);
+    } else {
+      // 动态查询注册表，保证新注册的函数自动生效
+      allowChecker = (name) => this.functionRegistry.has(name);
+    }
+
+    this.syntaxFilter = new SyntaxFilter(allowChecker);
+    this.typeChecker = new TypeChecker();
     this.options = {
       timeout: options.timeout ?? 5000,
       maxIterations: options.maxIterations ?? 100000,
@@ -61,17 +69,6 @@ export class Sandbox {
 
     // 3. 超时执行
     return this.executeWithTimeout(ast, context);
-  }
-
-  /**
-   * 【兼容旧接口】从源码执行，内部会走 ExpressionCompiler 的缓存（若传入）
-   * 实际上直接调用此方法不会自动缓存，建议外部统一使用 ExpressionCompiler.execute()
-   */
-  async execute(source: string, context: ExecutionContext): Promise<unknown> {
-    // 此方法保留是为了向后兼容，内部仍然做过滤、解析、校验、执行
-    this.syntaxFilter.validate(source);
-    const ast = this.parser.parse(source);
-    return this.executeAST(ast, context);
   }
 
   // ========== 以下为私有方法，与之前实现一致 ==========

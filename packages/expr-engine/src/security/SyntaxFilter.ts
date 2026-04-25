@@ -29,13 +29,21 @@ export class SyntaxFilter {
   ];
 
   private readonly maxLength: number = 10000; // 表达式最大长度限制
-  private readonly allowedFunctions: Set<string>; // 允许调用的函数白名单
+
+  // 改为一个函数引用，用于动态判断函数是否允许
+  private readonly functionAllowChecker: (name: string) => boolean;
 
   /**
-   * @param allowedFunctions 允许的函数名列表
+   * @param allowedFunctionsOrChecker  可以传入静态白名单数组，或一个动态判断函数
+   *   若传入数组，则内部转换为 Set 查询；若传入函数，则每次调用时动态求值
    */
-  constructor(allowedFunctions: string[] = []) {
-    this.allowedFunctions = new Set(allowedFunctions);
+  constructor(allowedFunctionsOrChecker: string[] | ((name: string) => boolean)) {
+    if (typeof allowedFunctionsOrChecker === "function") {
+      this.functionAllowChecker = allowedFunctionsOrChecker;
+    } else {
+      const allowedSet = new Set(allowedFunctionsOrChecker);
+      this.functionAllowChecker = (name) => allowedSet.has(name);
+    }
   }
 
   /**
@@ -59,6 +67,6 @@ export class SyntaxFilter {
    * 检查函数名是否在白名单中
    */
   isFunctionAllowed(name: string): boolean {
-    return this.allowedFunctions.has(name);
+    return this.functionAllowChecker(name);
   }
 }

@@ -41,7 +41,7 @@ export function createExpressionEngine(options?: { allowedFunctions?: string[]; 
   // 创建函数注册表并注册内置函数
   const registry = new FunctionRegistry();
   registerBuiltinFunctions(registry);
-  console.log(registry["functions"].keys());
+
   // 创建编译器
   const compiler = new ExpressionCompiler(registry, {
     allowedFunctions: options?.allowedFunctions,
