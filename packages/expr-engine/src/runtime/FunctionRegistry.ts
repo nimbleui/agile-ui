@@ -1,5 +1,6 @@
 import { Type, Types } from "../type-system/Types";
 import { ExecutionContext } from "./ExecutionContext";
+import builtinFunction from "../builtinFunction";
 
 /**
  * 函数签名定义
@@ -81,63 +82,6 @@ export function registerBuiltinFunctions(registry: FunctionRegistry): void {
     execute: (args) => Math.min(...(args as number[])),
   });
 
-  // ========== 字符串函数 ==========
-  registry.register({
-    name: "concat",
-    signature: { paramTypes: [Types.string], returnType: Types.string, variadic: true },
-    execute: (args) => (args as string[]).join(""),
-  });
-
-  registry.register({
-    name: "contains",
-    signature: { paramTypes: [Types.string, Types.string], returnType: Types.boolean },
-    execute: (args) => (args[0] as string).includes(args[1] as string),
-  });
-
-  registry.register({
-    name: "length",
-    signature: { paramTypes: [Types.any], returnType: Types.number },
-    execute: (args) => {
-      const val = args[0];
-      if (typeof val === "string" || Array.isArray(val)) return val.length;
-      return 0;
-    },
-  });
-
-  // ========== 数组函数 ==========
-  registry.register({
-    name: "map",
-    signature: {
-      paramTypes: [Types.arrayOf(Types.any), Types.func([Types.any], Types.any)],
-      returnType: Types.arrayOf(Types.any),
-    },
-    execute: (args, ctx) => {
-      const arr = args[0] as unknown[];
-      const fn = args[1] as IFunction; // 高阶函数，参数是一个函数
-      return arr.map((item) => fn.execute([item], ctx));
-    },
-  });
-
-  registry.register({
-    name: "filter",
-    signature: {
-      paramTypes: [Types.arrayOf(Types.any), Types.func([Types.any], Types.boolean)],
-      returnType: Types.arrayOf(Types.any),
-    },
-    execute: (args, ctx) => {
-      const arr = args[0] as unknown[];
-      const predicate = args[1];
-      let fn: IFunction;
-
-      if (typeof predicate === "string") {
-        fn = ctx.functions.get(predicate)!; // 保留字符串引用
-      } else if (typeof predicate === "object" && "execute" in (predicate as object)) {
-        fn = predicate as IFunction; // Lambda 返回的就是 IFunction
-      } else {
-        throw new Error("filter predicate must be a function name or lambda");
-      }
-
-      return arr.filter((item, index) => fn.execute([item, index], ctx));
-    },
-  });
+  // 注册方法
+  builtinFunction(registry);
 }
