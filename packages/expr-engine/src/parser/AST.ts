@@ -15,7 +15,8 @@ export type ASTNode =
   | IndexExpressionNode // 索引访问节点
   | ConditionalExpressionNode // 条件表达式节点（三元运算符）
   | ArrayExpressionNode // 数组字面量节点
-  | ObjectExpressionNode; // 对象字面量节点
+  | ObjectExpressionNode // 对象字面量节点
+  | LambdaExpressionNode; // Lambda 箭头
 
 /**
  * 字面量节点
@@ -130,6 +131,16 @@ export interface ObjectExpressionNode {
 }
 
 /**
+ * Lambda 箭头
+ * 例如：(item) => item.state
+ */
+export interface LambdaExpressionNode {
+  type: "LambdaExpression";
+  params: string[]; // 参数名列表
+  body: ASTNode; // 函数体（单表达式）
+}
+
+/**
  * AST 访问者基类（Visitor 模式）
  * 用于实现对 AST 的遍历操作，子类可重写特定节点的访问方法
  */
@@ -161,6 +172,8 @@ export class ASTVisitor<T = void> {
         return this.visitArrayExpression(node);
       case "ObjectExpression":
         return this.visitObjectExpression(node);
+      case "LambdaExpression":
+        return this.visitLambdaExpression(node);
       default:
         throw new Error(`Unknown node type: ${(node as any).type}`);
     }
@@ -198,6 +211,9 @@ export class ASTVisitor<T = void> {
     return this.visitChildren(node);
   }
   visitObjectExpression(node: ObjectExpressionNode): T {
+    return this.visitChildren(node);
+  }
+  visitLambdaExpression(node: LambdaExpressionNode): T {
     return this.visitChildren(node);
   }
 

@@ -288,6 +288,11 @@ export class Lexer {
       this.advance();
       return new Token(TokenType.LT, "<", startPos, startLine, startCol);
     }
+    if (char === "=" && this.source[this.position + 1] === ">") {
+      this.advance();
+      this.advance(); // 消费 = 和 >
+      return new Token(TokenType.ARROW, "=>", startPos, startLine, startCol);
+    }
 
     return null; // 不是运算符
   }

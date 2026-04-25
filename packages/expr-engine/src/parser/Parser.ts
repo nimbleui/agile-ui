@@ -13,6 +13,7 @@ import {
   ConditionalExpressionNode,
   ArrayExpressionNode,
   ObjectExpressionNode,
+  LambdaExpressionNode,
 } from "./AST";
 
 /**
@@ -211,9 +212,57 @@ export class Parser {
 
     // 括号分组 ( expression )
     if (this.match(TokenType.LPAREN)) {
-      const expr = this.parseExpression();
-      this.consume(TokenType.RPAREN, "Expected ')' after expression");
-      return expr;
+      // 检查是否为空括号 ()
+      if (this.check(TokenType.RPAREN)) {
+        this.advance(); // 消费 )
+        throw new Error("Empty parentheses are not allowed (either group or lambda params)");
+      }
+
+      // 尝试判断是否为 Lambda 参数列表
+      // 条件：括号内第一个 Token 是标识符，且其后紧跟 , 或 ) 或 =>
+      const mayBeLambda =
+        this.peek().type === TokenType.IDENTIFIER &&
+        (this.tokens[this.current + 1]?.type === TokenType.COMMA ||
+          this.tokens[this.current + 1]?.type === TokenType.RPAREN ||
+          (this.tokens[this.current + 1]?.type === TokenType.RPAREN &&
+            this.tokens[this.current + 2]?.type === TokenType.ARROW) ||
+          this.tokens[this.current + 1]?.type === TokenType.COMMA); /* 简化判断 */
+
+      if (!mayBeLambda) {
+        // 不是 Lambda → 直接作为分组表达式
+        const expr = this.parseExpression();
+        this.consume(TokenType.RPAREN, "Expected ')' after expression");
+        return expr;
+      }
+
+      // 尽可能解析为 Lambda
+      const startIndex = this.current;
+      const params: string[] = [];
+      const first = this.advance(); // 消费标识符
+      params.push(first.value);
+
+      while (this.match(TokenType.COMMA)) {
+        const param = this.consume(TokenType.IDENTIFIER, "Expected parameter name");
+        params.push(param.value);
+      }
+
+      this.consume(TokenType.RPAREN, "Expected ')' after lambda parameters");
+
+      if (this.match(TokenType.ARROW)) {
+        const body = this.parseExpression();
+        return {
+          type: "LambdaExpression",
+          params,
+          body,
+        } as LambdaExpressionNode;
+      } else {
+        // 不符合 Lambda：回退，重新作为分组表达式解析
+        this.current = startIndex;
+        this.advance(); // 重新消费 '('
+        const expr = this.parseExpression();
+        this.consume(TokenType.RPAREN, "Expected ')' after expression");
+        return expr;
+      }
     }
 
     // 数组字面量 [ ... ]

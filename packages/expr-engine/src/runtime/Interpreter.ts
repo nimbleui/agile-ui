@@ -1,5 +1,6 @@
-import { ASTNode, ASTVisitor } from "../parser/AST";
+import { ASTNode, ASTVisitor, LambdaExpressionNode } from "../parser/AST";
 import { ExecutionContext } from "./ExecutionContext";
+import { IFunction } from "./FunctionRegistry";
 // import { IFunction } from "./FunctionRegistry";
 
 /**
@@ -135,5 +136,25 @@ export class Interpreter extends ASTVisitor<unknown> {
       obj[prop.key] = this.visit(prop.value);
     }
     return obj;
+  }
+
+  override visitLambdaExpression(node: LambdaExpressionNode): unknown {
+    // 创建并返回一个 IFunction 对象
+    const lambdaFunc: IFunction = {
+      name: "<lambda>",
+      signature: { paramTypes: [], returnType: "any" }, // 类型可后续细化
+      execute(args: unknown[], callContext: ExecutionContext): unknown {
+        // 创建子作用域：绑定参数到形参名
+        const childVars: Record<string, unknown> = {};
+        node.params.forEach((param, index) => {
+          childVars[param] = args[index];
+        });
+        // 基于调用时的上下文创建执行上下文（避免污染原始上下文）
+        const localContext = callContext.createChild(childVars);
+        const interpreter = new Interpreter(localContext);
+        return interpreter.evaluate(node.body);
+      },
+    };
+    return lambdaFunc;
   }
 }

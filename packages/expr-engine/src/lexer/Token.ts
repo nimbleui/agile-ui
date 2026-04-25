@@ -48,6 +48,8 @@ export enum TokenType {
   FALSE = "false", // 关键字 false
   NULL_KW = "null", // 关键字 null
 
+  ARROW = "=>", // Lambda 箭头
+
   EOF = "EOF", // 文件结束标记
 }
 

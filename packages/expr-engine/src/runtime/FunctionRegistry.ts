@@ -126,8 +126,18 @@ export function registerBuiltinFunctions(registry: FunctionRegistry): void {
     },
     execute: (args, ctx) => {
       const arr = args[0] as unknown[];
-      const fn = args[1] as IFunction;
-      return arr.filter((item) => fn.execute([item], ctx));
+      const predicate = args[1];
+      let fn: IFunction;
+
+      if (typeof predicate === "string") {
+        fn = ctx.functions.get(predicate)!; // 保留字符串引用
+      } else if (typeof predicate === "object" && "execute" in (predicate as object)) {
+        fn = predicate as IFunction; // Lambda 返回的就是 IFunction
+      } else {
+        throw new Error("filter predicate must be a function name or lambda");
+      }
+
+      return arr.filter((item, index) => fn.execute([item, index], ctx));
     },
   });
 }
