@@ -142,6 +142,7 @@ export class Interpreter extends ASTVisitor<unknown> {
     // 创建并返回一个 IFunction 对象
     const lambdaFunc: IFunction = {
       name: "<lambda>",
+      description: "lambda函数",
       signature: { paramTypes: [], returnType: "any" }, // 类型可后续细化
       execute(args: unknown[], callContext: ExecutionContext): unknown {
         // 创建子作用域：绑定参数到形参名

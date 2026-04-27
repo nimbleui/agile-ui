@@ -8,8 +8,11 @@ import { ASTNode } from "../parser/AST";
 import { Type } from "../type-system/Types";
 
 export interface SandboxOptions {
+  /** 超时时间 */
   timeout?: number;
+  /** 最大数量 */
   maxIterations?: number;
+  /** 白名单 */
   allowedFunctions?: string[];
 }
 

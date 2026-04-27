@@ -28,6 +28,7 @@ export { SyntaxFilter } from "./security/SyntaxFilter";
 export { ExpressionCompiler, type CompileOptions } from "./compiler/ExpressionCompiler";
 export { LRUCache } from "./cache/LRUCache";
 
+// 添加自定义方法
 export type { CustomFunctionDef, FunctionParam } from "./functions/CustomFunctionDef";
 export { CustomFunctionCompiler } from "./functions/CustomFunctionCompiler";
 export { CustomFunctionManager } from "./functions/CustomFunctionManager";

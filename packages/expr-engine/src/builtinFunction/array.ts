@@ -20,10 +20,12 @@ function resolveIteratee(arg: unknown, ctx: ExecutionContext): IFunction {
 // 工厂函数：生成一个数组高阶函数（如 filter, map, find 等）
 function createArrayIterateeFunction(
   name: string,
-  nativeMethod: "filter" | "map" | "some" | "every" | "find",
+  nativeMethod: "filter" | "map" | "some" | "every" | "find" | "findIndex",
+  desc: string,
 ): IFunction {
   return {
     name,
+    description: desc,
     signature: {
       paramTypes: [Types.arrayOf(Types.any), Types.func([Types.any], Types.any)],
       returnType: Types.arrayOf(Types.any), // 简单起见，返回 any 数组；有些方法返回单个元素，但可稍后细化
@@ -46,9 +48,10 @@ function createArrayIterateeFunction(
 }
 
 export default function (registry: FunctionRegistry) {
-  registry.register(createArrayIterateeFunction("arrMap", "map"));
-  registry.register(createArrayIterateeFunction("arrFind", "find"));
-  registry.register(createArrayIterateeFunction("arrSome", "some"));
-  registry.register(createArrayIterateeFunction("arrEvery", "every"));
-  registry.register(createArrayIterateeFunction("arrFilter", "filter"));
+  registry.register(createArrayIterateeFunction("arrMap", "map", "映射一份新的数组"));
+  registry.register(createArrayIterateeFunction("arrFind", "find", "查找数组满足条件的一个元素"));
+  registry.register(createArrayIterateeFunction("arrFindIndex", "findIndex", "查找数组满足条件的一个元素的索引"));
+  registry.register(createArrayIterateeFunction("arrSome", "some", "数组中是否至少有一个元素通过"));
+  registry.register(createArrayIterateeFunction("arrEvery", "every", "数组内的所有元素是否都能通过"));
+  registry.register(createArrayIterateeFunction("arrFilter", "filter", "过滤满足添加的元素"));
 }

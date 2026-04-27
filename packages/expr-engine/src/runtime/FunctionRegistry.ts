@@ -16,6 +16,7 @@ export interface FunctionSignature {
  */
 export interface IFunction {
   name: string; // 函数名
+  description: string; // 描述
   signature: FunctionSignature; // 函数签名
   execute(args: unknown[], context: ExecutionContext): unknown; // 执行函数
 }
@@ -92,18 +93,21 @@ export function registerBuiltinFunctions(registry: FunctionRegistry): void {
   // ========== 数学函数 ==========
   registry.register({
     name: "abs",
+    description: "绝对值",
     signature: { paramTypes: [Types.number], returnType: Types.number },
     execute: (args) => Math.abs(args[0] as number),
   });
 
   registry.register({
     name: "max",
+    description: "参数中的最大值",
     signature: { paramTypes: [Types.number], returnType: Types.number, variadic: true },
     execute: (args) => Math.max(...(args as number[])),
   });
 
   registry.register({
     name: "min",
+    description: "参数中的最小值",
     signature: { paramTypes: [Types.number], returnType: Types.number, variadic: true },
     execute: (args) => Math.min(...(args as number[])),
   });

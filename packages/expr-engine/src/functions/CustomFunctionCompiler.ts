@@ -57,7 +57,7 @@ export class CustomFunctionCompiler {
       return this.sandbox.executeASTSync(bodyAST, localContext);
     };
 
-    return { name: def.name, signature, execute };
+    return { name: def.name, signature, execute, description: def.description };
   }
 
   /**

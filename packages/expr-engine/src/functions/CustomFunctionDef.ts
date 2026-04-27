@@ -6,7 +6,7 @@ export interface CustomFunctionDef {
   /** 函数名（调用时使用） */
   name: string;
   /** 描述文本 */
-  description?: string;
+  description: string;
   /** 参数列表 */
   params: FunctionParam[];
   /** 函数体（使用表达式语法） */

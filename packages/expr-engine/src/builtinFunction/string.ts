@@ -6,9 +6,11 @@ function createStringFunction(
   paramTypes: Type[],
   returnType: Type,
   fn: (str: string, ...rest: any[]) => unknown,
+  desc: string,
 ): IFunction {
   return {
     name,
+    description: desc,
     signature: { paramTypes, returnType },
     execute(args: unknown[]): unknown {
       const [maybeStr, ...rest] = args;
@@ -22,19 +24,19 @@ function createStringFunction(
 }
 
 export default function (registry: FunctionRegistry) {
-  // 转大写
-  registry.register(createStringFunction("toUpper", [Types.string], Types.string, (str) => str.toUpperCase()));
+  registry.register(
+    createStringFunction("srtToUpper", [Types.string], Types.string, (str) => str.toUpperCase(), "转大写"),
+  );
 
-  // 转小写
-  registry.register(createStringFunction("toLower", [Types.string], Types.string, (str) => str.toLowerCase()));
+  registry.register(
+    createStringFunction("srtToLower", [Types.string], Types.string, (str) => str.toLowerCase(), "转小写"),
+  );
 
-  // 去除首尾空白
-  registry.register(createStringFunction("trim", [Types.string], Types.string, (str) => str.trim()));
+  registry.register(createStringFunction("srtTrim", [Types.string], Types.string, (str) => str.trim(), "去除首尾空白"));
 
-  // 获取子串 substring(str, start, end?)  - 模仿 JS 的 substring
   registry.register(
     createStringFunction(
-      "substring",
+      "srtSubstring",
       [Types.string, Types.number, Types.number], // end 可选，但签名中标注为 number 也行
       Types.string,
       (str, start: number, end?: number) => {
@@ -43,62 +45,93 @@ export default function (registry: FunctionRegistry) {
         }
         return str.substring(start);
       },
+      "获取子串 substring(str, start, end?)  - 模仿 JS 的 substring",
     ),
   );
 
-  // 替换第一个匹配
   registry.register(
     createStringFunction(
-      "replace",
+      "srtReplace",
       [Types.string, Types.string, Types.string],
       Types.string,
       (str, search: string, replacement: string) => str.replace(search, replacement),
+      "替换第一个匹配",
     ),
   );
 
-  // 分割字符串
   registry.register(
-    createStringFunction("split", [Types.string, Types.string], Types.arrayOf(Types.string), (str, separator: string) =>
-      str.split(separator),
+    createStringFunction(
+      "srtSplit",
+      [Types.string, Types.string],
+      Types.arrayOf(Types.string),
+      (str, separator: string) => str.split(separator),
+      "分割字符串",
     ),
   );
 
-  // 拼接字符串
-  registry.register(createStringFunction("concat", [Types.string], Types.string, (...args) => args.join("")));
-
-  // 检查是否包含某些字符串
   registry.register(
-    createStringFunction("contains", [Types.string, Types.string], Types.boolean, (str, val) => str.includes(val)),
+    createStringFunction("srtConcat", [Types.string], Types.string, (...args) => args.join(""), "拼接字符串"),
   );
 
-  // 获取数组和字符串的长度
   registry.register(
-    createStringFunction("length", [Types.any], Types.number, (str) => {
-      if (Array.isArray(str) || typeof str == "string") {
-        return str.length;
-      }
-      return 0;
-    }),
-  );
-
-  // 检查是否以某字符串开头
-  registry.register(
-    createStringFunction("startsWith", [Types.string, Types.string], Types.boolean, (str, prefix: string) =>
-      str.startsWith(prefix),
+    createStringFunction(
+      "srtContains",
+      [Types.string, Types.string],
+      Types.boolean,
+      (str, val) => str.includes(val),
+      "检查是否包含某些字符串",
     ),
   );
 
-  // 检查是否以某字符串结尾
   registry.register(
-    createStringFunction("endsWith", [Types.string, Types.string], Types.boolean, (str, suffix: string) =>
-      str.endsWith(suffix),
+    createStringFunction(
+      "length",
+      [Types.any],
+      Types.number,
+      (str) => {
+        if (Array.isArray(str) || typeof str == "string") {
+          return str.length;
+        }
+        return 0;
+      },
+      "获取数组和字符串的长度",
     ),
   );
 
-  // 字符索引
   registry.register(
-    createStringFunction("charAt", [Types.string, Types.number], Types.string, (str, index: number) =>
-      str.charAt(index),
+    createStringFunction(
+      "srtStartsWith",
+      [Types.string, Types.string],
+      Types.boolean,
+      (str, prefix: string) => str.startsWith(prefix),
+      "检查是否以某字符串开头",
     ),
   );
+
+  registry.register(
+    createStringFunction(
+      "srtEndsWith",
+      [Types.string, Types.string],
+      Types.boolean,
+      (str, suffix: string) => str.endsWith(suffix),
+      "检查是否以某字符串结尾",
+    ),
+  );
+
+  registry.register(
+    createStringFunction(
+      "srtCharAt",
+      [Types.string, Types.number],
+      Types.string,
+      (str, index: number) => str.charAt(index),
+      "字符索引",
+    ),
+  );
+
+  registry.register({
+    name: "toString",
+    description: "转成字符串",
+    signature: { paramTypes: [Types.any], returnType: Types.string },
+    execute: (str: any) => String(str),
+  });
 }
