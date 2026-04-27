@@ -25,11 +25,23 @@ export interface IFunction {
  */
 export class FunctionRegistry {
   private functions: Map<string, IFunction> = new Map(); // 函数名到函数对象的映射
+  private parent?: FunctionRegistry; // 新增：父注册表
+
+  constructor(parent?: FunctionRegistry) {
+    this.parent = parent;
+  }
 
   /**
    * 注册一个函数
    */
-  register(fn: IFunction): void {
+  register(fn: IFunction, options?: { overwrite?: boolean }): void {
+    const allowOverwrite = options?.overwrite !== false;
+    if (this.functions.has(fn.name)) {
+      if (!allowOverwrite) {
+        throw new Error(`Function "${fn.name}" already exists and overwrite is disabled.`);
+      }
+      console.warn(`[FunctionRegistry] Function "${fn.name}" already registered. Overwriting.`);
+    }
     this.functions.set(fn.name, fn);
   }
 
@@ -37,14 +49,16 @@ export class FunctionRegistry {
    * 根据名称获取函数
    */
   get(name: string): IFunction | undefined {
-    return this.functions.get(name);
+    const fn = this.functions.get(name);
+    if (fn) return fn;
+    return this.parent?.get(name); // 级联查找
   }
 
   /**
    * 判断函数是否存在
    */
   has(name: string): boolean {
-    return this.functions.has(name);
+    return this.functions.has(name) || (this.parent?.has(name) ?? false);
   }
 
   /**
@@ -56,6 +70,18 @@ export class FunctionRegistry {
     if (!fn) return undefined;
     // 此处可添加参数类型检查逻辑，简化实现直接返回声明的返回类型
     return fn.signature.returnType;
+  }
+
+  /** 获取当前注册表直接拥有的函数名列表（不含父级） */
+  getOwnNames(): string[] {
+    return Array.from(this.functions.keys());
+  }
+
+  /**
+   * 从当前注册表中移除指定函数（不影响父注册表）
+   */
+  remove(name: string): boolean {
+    return this.functions.delete(name);
   }
 }
 

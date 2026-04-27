@@ -47,15 +47,13 @@ export class Sandbox {
   }
 
   /**
-   * 【推荐使用】对已编译的 AST 进行安全校验并超时执行
-   * @param ast     已编译的 AST（可来自缓存）
-   * @param context 执行上下文
+   * 执行安全校验与类型推导
    */
-  async executeAST(ast: ASTNode, context: ExecutionContext): Promise<unknown> {
-    // 1. AST 安全校验（深度限制、函数白名单）
+  private validateAndInfer(ast: ASTNode, context: ExecutionContext): void {
+    // 1. AST 结构安全校验
     this.validateAST(ast);
 
-    // 2. 类型检查（可选，用于未来扩展）
+    // 2. 类型检查（可选）
     const typeContext: TypeContext = {
       getVariableType: (name) => {
         const val = context.get(name);
@@ -66,6 +64,32 @@ export class Sandbox {
       },
     };
     this.typeChecker.infer(ast, typeContext);
+  }
+
+  /**
+   * 对已编译的 AST 进行安全校验并同步执行（无超时控制）
+   * 适用于自定义函数内部调用，安全校验包括：
+   * - AST 深度限制
+   * - 函数白名单检查
+   * - 类型推导（若启用）
+   */
+  executeASTSync(ast: ASTNode, context: ExecutionContext): unknown {
+    // 校验逻辑
+    this.validateAndInfer(ast, context);
+
+    // 3. 直接解释执行（无超时，依赖外部沙箱）
+    const interpreter = new Interpreter(context);
+    return interpreter.evaluate(ast);
+  }
+
+  /**
+   * 【推荐使用】对已编译的 AST 进行安全校验并超时执行
+   * @param ast     已编译的 AST（可来自缓存）
+   * @param context 执行上下文
+   */
+  async executeAST(ast: ASTNode, context: ExecutionContext): Promise<unknown> {
+    // 校验逻辑
+    this.validateAndInfer(ast, context);
 
     // 3. 超时执行
     return this.executeWithTimeout(ast, context);
@@ -113,6 +137,9 @@ export class Sandbox {
     }
   }
 
+  /**
+   * 带超时的解释器执行
+   */
   private executeWithTimeout(ast: ASTNode, context: ExecutionContext): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const interpreter = new Interpreter(context);

@@ -92,10 +92,15 @@ export class TypeChecker {
   /**
    * 推导二元表达式的类型
    */
-  private inferBinaryExpression(node: any, context: TypeContext): Type {
+  private inferBinaryExpression(node: any, context: TypeContext, debug = false): Type {
     const left = this.infer(node.left, context);
     const right = this.infer(node.right, context);
     const op = node.operator;
+
+    if (left === Types.unknown || right === Types.unknown) {
+      if (debug) console.debug(`Binary '${op}' has unknown operand(s)`);
+      return Types.unknown;
+    }
 
     // 算术运算符要求两边为 number，返回 number；字符串拼接返回 string
     if (["+", "-", "*", "/", "%"].includes(op)) {

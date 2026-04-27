@@ -28,6 +28,10 @@ export { SyntaxFilter } from "./security/SyntaxFilter";
 export { ExpressionCompiler, type CompileOptions } from "./compiler/ExpressionCompiler";
 export { LRUCache } from "./cache/LRUCache";
 
+export type { CustomFunctionDef, FunctionParam } from "./functions/CustomFunctionDef";
+export { CustomFunctionCompiler } from "./functions/CustomFunctionCompiler";
+export { CustomFunctionManager } from "./functions/CustomFunctionManager";
+
 // 便捷工厂函数：创建配置好的表达式引擎实例
 import { FunctionRegistry, registerBuiltinFunctions } from "./runtime/FunctionRegistry";
 import { ExpressionCompiler } from "./compiler/ExpressionCompiler";
@@ -40,18 +44,24 @@ import { ExecutionContext } from "./runtime/ExecutionContext";
 export function createExpressionEngine(options?: { allowedFunctions?: string[]; timeout?: number }) {
   // 创建函数注册表并注册内置函数
   const registry = new FunctionRegistry();
+  // 注册内置函数
   registerBuiltinFunctions(registry);
 
   // 创建编译器
-  const compiler = new ExpressionCompiler(registry, {
-    allowedFunctions: options?.allowedFunctions,
-    timeout: options?.timeout,
-  });
+  const compiler = new ExpressionCompiler(registry, options);
 
   // 返回包含编译器和便捷创建上下文方法的对象
   return {
     compiler,
     registry,
-    createContext: (vars: Record<string, unknown> = {}) => new ExecutionContext(vars, undefined, registry),
+    createContext: (vars: Record<string, unknown> = {}, parentFunctions?: FunctionRegistry) => {
+      // parentFunctions 通常为页面级注册表；若不传则使用全局注册表
+      const funcs = parentFunctions ?? registry;
+      return new ExecutionContext(vars, undefined, funcs);
+    },
+    /** 创建页面级函数注册表（继承全局函数） */
+    createPageRegistry: (): FunctionRegistry => {
+      return new FunctionRegistry(registry);
+    },
   };
 }
