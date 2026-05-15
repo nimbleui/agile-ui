@@ -12,7 +12,7 @@ export interface SandboxOptions {
   timeout?: number;
   /** 最大数量 */
   maxIterations?: number;
-  /** 白名单 */
+  /** 函数白名单 */
   allowedFunctions?: string[];
 }
 

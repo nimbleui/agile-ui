@@ -77,10 +77,26 @@ export class ExpressionCompiler {
   }
 
   /**
-   * 同步执行表达式（跳过沙箱，不建议生产环境使用）
+   * 同步执行表达式
    */
-  evaluateSync(source: string, context: ExecutionContext): unknown {
-    const ast = this.compile(source);
+  evaluateSync(source: string, context: ExecutionContext, options: CompileOptions = {}): unknown {
+    // 确定本次执行的配置
+    const useSandbox = options.sandbox !== false; // 默认 true
+    const useCache = options.cache !== false; // 默认 true
+
+    // 获取 AST（利用缓存）
+    const ast = useCache ? this.compile(source) : this.parser.parse(source);
+
+    // ========== 沙箱模式（默认）==========
+    if (useSandbox) {
+      // 语法层过滤（检查危险模式）
+      this.sandbox.syntaxFilter.validate(source);
+
+      // 执行（内部会进行 AST 校验）
+      return this.sandbox.executeASTSync(ast, context);
+    }
+
+    // ========== 非沙箱模式（调试/内部可信场景）==========
     const interpreter = new Interpreter(context);
     return interpreter.evaluate(ast);
   }

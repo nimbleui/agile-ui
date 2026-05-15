@@ -23,7 +23,6 @@ export class Interpreter extends ASTVisitor<unknown> {
   }
 
   // ========== 重写各节点的访问方法 ==========
-
   override visitLiteral(node: any): unknown {
     return node.value; // 直接返回字面量值
   }
