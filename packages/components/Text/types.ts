@@ -5,6 +5,6 @@ export type TextProps = {
   /** 渲染的元素 */
   target?: string;
   /** 文本 */
-  text?: string;
+  text?: string | number;
 } & CommonTypes &
   PrimitiveProps;

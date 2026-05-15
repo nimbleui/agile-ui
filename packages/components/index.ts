@@ -14,6 +14,7 @@ import { YScrollbar, type ScrollbarProps } from "./Scrollbar";
 import { YVirtualList, type VirtualListProps } from "./VirtualList";
 import { YTreeVirtual, type TreeVirtualProps } from "./TreeVirtual";
 import { CommonTypes } from "./common";
+import { YCol, YGrid } from "./Grid";
 
 export const components = {
   YText,
@@ -24,9 +25,26 @@ export const components = {
   YInput,
   YField,
   YScrollbar,
+  YCol,
+  YGrid,
   YVirtualList,
   YTreeVirtual,
 };
+
+export const atomicComponent: { name: string; type: "atomic"; label: string }[] = [
+  { name: "YText", type: "atomic", label: "文本" },
+  { name: "YClose", type: "atomic", label: "关闭" },
+  { name: "YMask", type: "atomic", label: "遮罩层" },
+  { name: "YContainer", type: "atomic", label: "容器" },
+  { name: "YInput", type: "atomic", label: "输入框" },
+  { name: "YField", type: "atomic", label: "列" },
+  { name: "YScrollbar", type: "atomic", label: "滚动条" },
+  { name: "YGrid", type: "atomic", label: "栅格布局" },
+  { name: "YCol", type: "atomic", label: "栅格列" },
+  { name: "YVirtualList", type: "atomic", label: "虚拟列表" },
+  { name: "YTreeVirtual", type: "atomic", label: "虚拟树形" },
+];
+
 export interface ComponentProps<K extends keyof CommonTypes = never> {
   /** 文本组件 */
   YText: Omit<TextProps, K>;
