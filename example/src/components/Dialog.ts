@@ -13,13 +13,46 @@ export const DialogConfig = reactive<ComponentDefinition>({
     { name: "width", type: "string", default: "40%", description: "弹窗组件的宽度" },
   ],
   template: {
-    id: "container-1",
+    id: "dialog-container-1",
     component: "YContainer",
+    props: { display: "block" },
+    children: [
+      {
+        id: "dialog-mask-1",
+        component: "YMask",
+        children: [
+          {
+            id: "dialog-model-1",
+            component: "YModel",
+            children: [
+              {
+                id: "dialog-flex-1",
+                component: "YFlex",
+                props: { justify: "center", align: "center" },
+                children: [
+                  {
+                    id: "dialog-text-1",
+                    component: "YText",
+                    props: { text: "{{props.title}}" },
+                    children: [{ id: "dialog-slot-1", component: "$slot:title" }],
+                  },
+                  {
+                    id: "dialog-close-1",
+                    component: "YClose",
+                  },
+                ],
+              },
+              { id: "dialog-slot-1", component: "$slot:default" },
+            ],
+          },
+        ],
+      },
+    ],
   },
 });
 
 export const DialogRegistry = reactive<ComponentRegistryItem>({
-  name: "YDetail",
+  name: "YDialog",
   type: "composite",
   definition: DialogConfig,
 });

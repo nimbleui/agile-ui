@@ -193,11 +193,25 @@ const node = reactive<NodeTypes>({
     ],
     data: nodeData,
   },
+  slots: {
+    "value-name": [
+      {
+        id: "55555",
+        component: "YText",
+        props: { text: "{{props.data[item.key]}}" },
+      },
+    ],
+  },
 });
 const context = reactive({});
-setTimeout(() => {
-  nodeData.name = "3333";
-}, 2000);
+
+const nodes = reactive<NodeTypes>({
+  id: "1233",
+  component: "YDialog",
+  events: {},
+  props: { title: "2222" },
+  children: [{ id: "666", component: "YText", props: { text: "3333" } }],
+});
 </script>
 
 <template>
@@ -208,4 +222,5 @@ setTimeout(() => {
   </CanvasDrag>
 
   <RenderNode :node="node" :context="context" :custom-components="registry" />
+  <RenderNode :node="nodes" :context="context" :custom-components="registry" />
 </template>

@@ -15,6 +15,8 @@ import { YVirtualList, type VirtualListProps } from "./VirtualList";
 import { YTreeVirtual, type TreeVirtualProps } from "./TreeVirtual";
 import { CommonTypes } from "./common";
 import { YCol, YGrid } from "./Grid";
+import { YModel } from "./Model";
+import { YFlex } from "./Flex";
 
 export const components = {
   YText,
@@ -27,6 +29,8 @@ export const components = {
   YScrollbar,
   YCol,
   YGrid,
+  YModel,
+  YFlex,
   YVirtualList,
   YTreeVirtual,
 };
@@ -41,6 +45,8 @@ export const atomicComponent: { name: string; type: "atomic"; label: string }[] 
   { name: "YScrollbar", type: "atomic", label: "滚动条" },
   { name: "YGrid", type: "atomic", label: "栅格布局" },
   { name: "YCol", type: "atomic", label: "栅格列" },
+  { name: "YModel", type: "atomic", label: "弹框组件" },
+  { name: "YFlex", type: "atomic", label: "弹性组件" },
   { name: "YVirtualList", type: "atomic", label: "虚拟列表" },
   { name: "YTreeVirtual", type: "atomic", label: "虚拟树形" },
 ];
